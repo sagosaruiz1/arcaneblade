@@ -3,6 +3,8 @@ package io.arcaneblade;
 import io.inputs.*;
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.Constants.Directions.*;
+import static io.arcaneblade.Game.GAME_WIDTH;
+import static io.arcaneblade.Game.GAME_HEIGHT;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -31,8 +33,9 @@ public class GamePanel extends JPanel {
 	}
 
 	private void setPanelSize() {
-		Dimension size = new Dimension(1280, 800);
+		Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
 		setPreferredSize(size);
+		System.out.println("size: " + GAME_WIDTH + " : " + GAME_HEIGHT);
 
 	}
 
@@ -44,7 +47,7 @@ public class GamePanel extends JPanel {
 		super.paintComponent(g);
 		game.render(g);
 	}
-	
+
 	public Game getGame() {
 		return game;
 	}

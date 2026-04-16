@@ -10,6 +10,8 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import utilz.LoadSave;
+
 public class Player extends Entity {
 
 	private BufferedImage[][] animations;
@@ -53,19 +55,19 @@ public class Player extends Entity {
 				aniIndex = 0;
 
 				if (playerAction == ATTACK_1) {
-					
+
 					if (attackType == ATTACK_2) {
-						
+
 						playerAction = ATTACK_2;
-						
+
 					} else {
 						attacking = false;
 					}
 				} else if (playerAction == ATTACK_2) {
-					
+
 					attacking = false;
 					attackType = ATTACK_1;
-					
+
 				} else {
 					attacking = false;
 				}
@@ -124,29 +126,25 @@ public class Player extends Entity {
 	}
 
 	private void loadAnimations() {
-		animations = new BufferedImage[9][];
+		animations = new BufferedImage[LoadSave.PLAYER_ATLAS.length][];
 
-		animations[IDLE] = loadAnimRow("/entities/player/Idle.png", GetSpriteAmount(IDLE));
-		animations[RUNNING] = loadAnimRow("/entities/player/Run.png", GetSpriteAmount(RUNNING));
-		animations[JUMPING] = loadAnimRow("/entities/player/Jump.png", GetSpriteAmount(JUMPING));
-		animations[FALLING] = loadAnimRow("/entities/player/Fall.png", GetSpriteAmount(FALLING));
-		animations[DASHING] = loadAnimRow("/entities/player/Dash.png", GetSpriteAmount(DASHING));
-		animations[DEATH] = loadAnimRow("/entities/player/Death.png", GetSpriteAmount(DEATH));
-		animations[HURT] = loadAnimRow("/entities/player/Hurt.png", GetSpriteAmount(HURT));
-		animations[ATTACK_1] = loadAnimRow("/entities/player/Attack 1.png", GetSpriteAmount(ATTACK_1));
-		animations[ATTACK_2] = loadAnimRow("/entities/player/Attack 2.png", GetSpriteAmount(ATTACK_2));
+		for (int i = 0; i < animations.length; i++) {
+
+			BufferedImage spriteSheet = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS[i]);
+			
+			animations[i] = loadAnimRow(spriteSheet, GetSpriteAmount(i));
+			
+		}
 	}
 
-	private BufferedImage[] loadAnimRow(String path, int frameCount) {
+	private BufferedImage[] loadAnimRow(BufferedImage atlas, int frameCount) {
 		BufferedImage[] tempRow = new BufferedImage[frameCount];
-		try (InputStream is = getClass().getResourceAsStream(path)) {
-			BufferedImage fullSheet = ImageIO.read(is);
 
+		if (atlas != null) {
 			for (int i = 0; i < frameCount; i++) {
-				tempRow[i] = fullSheet.getSubimage(i * 144, 0, 144, 144);
+				tempRow[i] = atlas.getSubimage(i * 144, 0, 144, 144);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return tempRow;
 	}
