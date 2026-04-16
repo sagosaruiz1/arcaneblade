@@ -48,6 +48,25 @@ public class Constants {
 			}
 
 		}
+		
+		public static int GetAniSpeed(int player_action) {
+			switch(player_action) {
+			case IDLE:
+			case RUNNING:
+			case JUMPING:
+			case FALLING:
+			case DEATH:
+				return 15;
+			case DASHING:
+			case ATTACK_1:
+			case ATTACK_2:
+			case HURT:
+				return 10;
+				
+			default:
+				return 1;
+			}
+		}
 
 	}
 
