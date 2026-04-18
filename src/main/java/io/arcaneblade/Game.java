@@ -34,7 +34,7 @@ public class Game implements Runnable {
 	}
 
 	private void initClasses() {
-		player = new Player(200, 200);
+		player = new Player(200, 200, (int) (144 * SCALE), (int) (144 * SCALE));
 		levelManager = new LevelManager(this);
 
 	}
@@ -50,8 +50,8 @@ public class Game implements Runnable {
 	}
 
 	public void render(Graphics g) {
-		player.render(g);
 		levelManager.draw(g);
+		player.render(g);
 	}
 
 	// FPS CHECK

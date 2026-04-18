@@ -17,7 +17,7 @@ public class LoadSave {
 			"/entities/player/Attack 2.png", };
 
 	public static final String LEVEL_ATLAS = "/maps/tilemap.png";
-	public static final String LEVEL_ONE_DATA = "/maps/level-one/level_one_data.png";
+//	public static final String LEVEL_ONE_DATA = "/maps/level-one/level_one_data.png";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;
@@ -44,16 +44,19 @@ public class LoadSave {
 
 	}
 
-	public static int[][] GetLevelData() {
-		int[][] lvlData = new int[Game.TILES_IN_HEIGHT][Game.TILES_IN_WIDTH];
-		BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA);
-
-		for (int j = 0; j < img.getHeight(); j++)
-			for (int i = 0; i < img.getWidth(); i++) {
-				Color color = new Color(img.getRGB(i, j));
-				
-				lvlData[j][i] = color.getRed();
-			}
-		return lvlData;
-	}
+//	public static int[][] GetLevelData() {
+//		BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA);
+//		int[][] lvlData = new int[Game.TILES_IN_HEIGHT][Game.TILES_IN_WIDTH];
+//
+//		for (int j = 0; j < img.getHeight(); j++)
+//			for (int i = 0; i < img.getWidth(); i++) {
+//				Color color = new Color(img.getRGB(i, j));
+//				int value = color.getRed();
+//				if (value >= 27) {
+//					value = 0;
+//				}
+//				lvlData[j][i] = value;
+//			}
+//		return lvlData;
+//	}
 }

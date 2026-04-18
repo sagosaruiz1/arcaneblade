@@ -22,8 +22,8 @@ public class Player extends Entity {
 	private boolean left, up, right, down;
 	private float playerSpeed = 2.0f;
 
-	public Player(float x, float y) {
-		super(x, y);
+	public Player(float x, float y, int width, int height) {
+		super(x, y, width, height);
 		loadAnimations();
 	}
 
@@ -37,7 +37,7 @@ public class Player extends Entity {
 
 	public void render(Graphics g) {
 
-		g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, 432, 432, null);
+		g.drawImage(animations[playerAction][aniIndex], (int) x, (int) y, width, height, null);
 
 	}
 
@@ -131,9 +131,9 @@ public class Player extends Entity {
 		for (int i = 0; i < animations.length; i++) {
 
 			BufferedImage spriteSheet = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS[i]);
-			
+
 			animations[i] = loadAnimRow(spriteSheet, GetSpriteAmount(i));
-			
+
 		}
 	}
 
