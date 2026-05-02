@@ -55,7 +55,7 @@ public class Player extends Entity {
 		int speed = utilz.Constants.PlayerConstants.GetAniSpeed(playerAction);
 
 		if (aniTick >= speed) {
-			aniTick = 0;
+			aniTick = 0; 
 			aniIndex++;
 
 			if (aniIndex >= GetSpriteAmount(playerAction)) {

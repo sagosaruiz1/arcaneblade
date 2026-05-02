@@ -12,7 +12,7 @@ public class HelpMethods {
 				if (!IsSolid(x + width, y, lvlData))
 					if (!IsSolid(x, y + height, lvlData))
 						return true;
-		return false;
+		return false; 
 	}
 
 	private static boolean IsSolid(float x, float y, int[][] lvlData) {

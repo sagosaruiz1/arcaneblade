@@ -23,7 +23,7 @@ public class LoadSave {
 		BufferedImage img = null;
 
 		InputStream is = LoadSave.class.getResourceAsStream(fileName);
-
+ 
 		try {
 			if (is != null) {
 				img = ImageIO.read(is);

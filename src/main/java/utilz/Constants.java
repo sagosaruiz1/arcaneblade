@@ -10,7 +10,7 @@ public class Constants {
 	}
 
 	public static class PlayerConstants {
-		public static final int RUNNING = 0;
+		public static final int RUNNING = 0; 
 		public static final int IDLE = 1;
 		public static final int JUMPING = 2;
 		public static final int FALLING = 3;

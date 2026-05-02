@@ -12,7 +12,7 @@ public class LevelManager {
 	private BufferedImage[] levelSprite;
 	private Level levelOne;
 
-	public LevelManager(Game game) {
+	public LevelManager(Game game) { 
 		this.game = game;
 		importOutsideSprites();
 		levelOne = new Level(LoadSave.GetLevelData());
