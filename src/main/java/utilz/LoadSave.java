@@ -17,9 +17,11 @@ public class LoadSave {
 			"/entities/player/Attack 2.png", };
 
 	public static final String LEVEL_ATLAS = "/maps/tilemap.png";
-	public static final String LEVEL_ONE_DATA = "/maps/level-one/level_one_data.png";
+//	public static final String LEVEL_ONE_DATA = "/maps/level-one/level_one_data.png";
+	public static final String LEVEL_ONE_DATA_LONG = "/maps/level-one/level_one_data_long.png";
 	public static final String MENU_BUTTONS = "/ui/button_atlas.png";
 	public static final String MENU_BACKGROUND = "/ui/menu_background.png";
+	public static final String MENU_BACKGROUND_IMG = "/ui/background_menu.png";
 	public static final String PAUSE_BACKGROUND = "/ui/pause_menu.png";
 	public static final String SOUND_BUTTONS = "/ui/sound_button.png";
 	public static final String URM_BUTTONS = "/ui/urm_buttons.png";
@@ -52,8 +54,8 @@ public class LoadSave {
 	
 	// GENERATE LEVEL ONE MAP
 	public static int[][] GetLevelData() {
-		int[][] lvlData = new int[Game.TILES_IN_HEIGHT][Game.TILES_IN_WIDTH];
-		BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA);
+		BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA_LONG);
+		int[][] lvlData = new int[img.getHeight()][img.getWidth()];
 
 		for (int j = 0; j < img.getHeight(); j++)
 			for (int i = 0; i < img.getWidth(); i++) {
