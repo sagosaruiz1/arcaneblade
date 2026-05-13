@@ -8,7 +8,7 @@ public abstract class Enemy extends Entity {
 		super(x, y, width, height);
 		this.enemyType = enemyType;
 		initHitbox(x, y, width, height);
-	}
+	} 
 
 	private void updateAnimationTick() { 
 		aniTick++;
