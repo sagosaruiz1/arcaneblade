@@ -10,7 +10,7 @@ public abstract class Enemy extends Entity {
 		initHitbox(x, y, width, height);
 	}
 
-	private void updateAnimationTick() {
+	private void updateAnimationTick() { 
 		aniTick++;
 		if (aniTick >= aniSpeed) {
 			aniTick = 0;
