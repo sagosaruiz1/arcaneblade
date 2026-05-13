@@ -15,6 +15,8 @@ public class LoadSave {
 			"/entities/player/Jump.png", "/entities/player/Fall.png", "/entities/player/Dash.png",
 			"/entities/player/Death.png", "/entities/player/Hurt.png", "/entities/player/Attack 1.png",
 			"/entities/player/Attack 2.png", };
+	
+	public static final String NIGHT_BORNE = "/entities/enemy/NightBorne.png";
 
 	public static final String LEVEL_ATLAS = "/maps/tilemap.png";
 //	public static final String LEVEL_ONE_DATA = "/maps/level-one/level_one_data.png";
@@ -26,6 +28,8 @@ public class LoadSave {
 	public static final String SOUND_BUTTONS = "/ui/sound_button.png";
 	public static final String URM_BUTTONS = "/ui/urm_buttons.png";
 	public static final String VOLUME_BUTTONS = "/ui/volume_buttons.png";
+	public static final String PLAYING_BG_IMG = "/ui/playing_bg_img.png";
+	public static final String PILLARS = "/ui/pillars.png";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

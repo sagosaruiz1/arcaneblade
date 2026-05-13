@@ -4,12 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 import entities.Player;
 import io.arcaneblade.Game;
 import levels.LevelManager;
 import ui.PauseOverlay;
 import utilz.LoadSave;
+import static utilz.Constants.Environment.*;
 
 public class Playing extends State implements Statemethods {
 	private Player player;
@@ -24,9 +26,14 @@ public class Playing extends State implements Statemethods {
 	private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
 	private int maxLvlOffset = maxTilesOffset * Game.TILES_SIZE;
 
+	private BufferedImage backgroundImg, pillars;
+
 	public Playing(Game game) {
 		super(game);
 		initClasses();
+
+		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BG_IMG);
+		pillars = LoadSave.GetSpriteAtlas(LoadSave.PILLARS);
 	}
 
 	private void initClasses() {
@@ -65,14 +72,24 @@ public class Playing extends State implements Statemethods {
 
 	@Override
 	public void draw(Graphics g) {
+		g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+
+		drawPillars(g);
+
 		levelManager.draw(g, xLvlOffset);
 		player.render(g, xLvlOffset);
 
 		if (paused) {
-			g.setColor(new Color(0,0,0,150));
+			g.setColor(new Color(0, 0, 0, 150));
 			g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
 			pauseOverlay.draw(g);
 		}
+	}
+
+	private void drawPillars(Graphics g) {
+
+		for (int i = 0; i < 3; i++)
+			g.drawImage(pillars, 0 + i * PILLARS_WIDTH, (int) (204 * Game.SCALE), PILLARS_WIDTH, PILLARS_HEIGHT, null);
 	}
 
 	public void mouseDragged(MouseEvent e) {

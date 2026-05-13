@@ -3,6 +3,14 @@ package utilz;
 import io.arcaneblade.Game;
 
 public class Constants {
+	
+	public static class Environment {
+		public static final int PILLARS_WIDTH_DEFAULT = 500;
+		public static final int PILLARS_HEIGHT_DEFAULT = 110;
+		
+		public static final int PILLARS_WIDTH = (int) (PILLARS_WIDTH_DEFAULT * Game.SCALE);
+		public static final int PILLARS_HEIGHT = (int) (PILLARS_HEIGHT_DEFAULT * Game.SCALE);
+	}
 
 	public static class UI {
 		public static class Buttons {
