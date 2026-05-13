@@ -18,7 +18,7 @@ public abstract class Enemy extends Entity {
 			if (aniIndex >= 9999) {
 				aniIndex = 0;
 			}
-		}
+		} 
 	}
 
 	public void update() {
