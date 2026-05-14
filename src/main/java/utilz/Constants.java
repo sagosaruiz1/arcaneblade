@@ -3,11 +3,51 @@ package utilz;
 import io.arcaneblade.Game;
 
 public class Constants {
-	
+
+	public static class EnemyConstants {
+		public static final int NIGHTBORNE = 0;
+
+		public static final int IDLE = 0;
+		public static final int RUNNING = 1;
+		public static final int ATTACK = 2;
+		public static final int HURT = 3;
+		public static final int DEAD = 4;
+
+		public static final int NIGHTBORNE_WIDTH_DEFAULT = 80;
+		public static final int NIGHTBORNE_HEIGHT_DEFAULT = 80;
+
+		public static final int NIGHTBORNE_WIDTH = (int) (NIGHTBORNE_WIDTH_DEFAULT * Game.SCALE * 2);
+		public static final int NIGHTBORNE_HEIGHT = (int) (NIGHTBORNE_HEIGHT_DEFAULT * Game.SCALE * 2);
+		
+		public static final int NB_DRAWOFFSET_X = (int)(29 * Game.SCALE);
+		public static final int NB_DRAWOFFSET_Y = (int)(37 * Game.SCALE);
+		
+		public static int GetSpriteAmount(int enemy_type, int enemy_state) {
+			
+			switch(enemy_type) {
+			case NIGHTBORNE:
+				switch(enemy_state) {
+				case IDLE:
+					return 9;
+				case RUNNING:
+					return 6;
+				case ATTACK:
+					return 12;
+				case HURT:
+					return 5;
+				case DEAD:
+					return 23;
+				}
+			}
+			
+			return 0;
+		}
+	}
+
 	public static class Environment {
 		public static final int PILLARS_WIDTH_DEFAULT = 500;
 		public static final int PILLARS_HEIGHT_DEFAULT = 110;
-		
+
 		public static final int PILLARS_WIDTH = (int) (PILLARS_WIDTH_DEFAULT * Game.SCALE);
 		public static final int PILLARS_HEIGHT = (int) (PILLARS_HEIGHT_DEFAULT * Game.SCALE);
 	}

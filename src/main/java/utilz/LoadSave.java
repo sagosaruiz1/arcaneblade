@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import entities.NightBorne;
 import io.arcaneblade.Game;
+import static utilz.Constants.EnemyConstants.NIGHTBORNE;
 
 public class LoadSave {
 
@@ -15,7 +18,7 @@ public class LoadSave {
 			"/entities/player/Jump.png", "/entities/player/Fall.png", "/entities/player/Dash.png",
 			"/entities/player/Death.png", "/entities/player/Hurt.png", "/entities/player/Attack 1.png",
 			"/entities/player/Attack 2.png", };
-	
+
 	public static final String NIGHT_BORNE = "/entities/enemy/NightBorne.png";
 
 	public static final String LEVEL_ATLAS = "/maps/tilemap.png";
@@ -35,7 +38,7 @@ public class LoadSave {
 		BufferedImage img = null;
 
 		InputStream is = LoadSave.class.getResourceAsStream(fileName);
- 
+
 		try {
 			if (is != null) {
 				img = ImageIO.read(is);
@@ -55,7 +58,20 @@ public class LoadSave {
 		return img;
 
 	}
-	
+
+	public static ArrayList<NightBorne> GetMobs() {
+		BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA_LONG);
+		ArrayList<NightBorne> list = new ArrayList<>();
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getGreen();
+				if (value == NIGHTBORNE)
+					list.add(new NightBorne(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+			}
+		return list;
+	}
+
 	// GENERATE LEVEL ONE MAP
 	public static int[][] GetLevelData() {
 		BufferedImage img = GetSpriteAtlas(LEVEL_ONE_DATA_LONG);
