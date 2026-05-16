@@ -26,9 +26,9 @@ public class EnemyManager {
 		System.out.println("size of mobs: " + mobs.size());
 	}
 
-	public void update(int[][] lvlData) {
+	public void update(int[][] lvlData, Player player) {
 		for (NightBorne nb : mobs)
-			nb.update(lvlData);
+			nb.update(lvlData, player);
 	}
 
 	public void draw(Graphics g, int xLvlOffset) {
