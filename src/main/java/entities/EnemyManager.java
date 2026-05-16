@@ -23,7 +23,7 @@ public class EnemyManager {
 
 	private void addEnemies() {
 		mobs = LoadSave.GetMobs();
-		System.out.println("size of crab: " + mobs.size());
+		System.out.println("size of mobs: " + mobs.size());
 	}
 
 	public void update(int[][] lvlData) {
