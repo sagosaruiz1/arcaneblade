@@ -33,6 +33,7 @@ public class LoadSave {
 	public static final String VOLUME_BUTTONS = "/ui/volume_buttons.png";
 	public static final String PLAYING_BG_IMG = "/ui/playing_bg_img.png";
 	public static final String PILLARS = "/ui/pillars.png";
+	public static final String STATUS_BAR = "/ui/health_power_bar.png";
 
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

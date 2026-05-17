@@ -1,6 +1,7 @@
 package entities;
 
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -28,7 +29,8 @@ public class EnemyManager {
 
 	public void update(int[][] lvlData, Player player) {
 		for (NightBorne nb : mobs)
-			nb.update(lvlData, player);
+			if (nb.isActive())
+				nb.update(lvlData, player);
 	}
 
 	public void draw(Graphics g, int xLvlOffset) {
@@ -36,16 +38,24 @@ public class EnemyManager {
 	}
 
 	private void drawMobs(Graphics g, int xLvlOffset) {
-//		for (NightBorne nb : mobs)
-//			g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()], (int) nb.getHitbox().x - xLvlOffset,
-//					(int) nb.getHitbox().y, NIGHTBORNE_WIDTH, NIGHTBORNE_HEIGHT, null);
+		for (NightBorne nb : mobs)
+			if (nb.isActive()) {
+				int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
 
-		for (NightBorne nb : mobs) {
-			int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
+				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
+						(int) nb.getHitbox().x - xLvlOffset + nb.flipX(), (int) nb.getHitbox().y - yOffset,
+						NIGHTBORNE_WIDTH * nb.flipW(), NIGHTBORNE_HEIGHT, null);
+				nb.drawAttackBox(g, xLvlOffset);
+			}
+	}
 
-			g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()], (int) nb.getHitbox().x - xLvlOffset,
-					(int) nb.getHitbox().y - yOffset, NIGHTBORNE_WIDTH, NIGHTBORNE_HEIGHT, null);
-		}
+	public void checkEnemyHit(Rectangle2D.Float attackBox) {
+		for (NightBorne nb : mobs)
+			if (nb.isActive())
+				if (attackBox.intersects(nb.getHitbox())) {
+					nb.hurt(10);
+					return;
+				}
 	}
 
 	private void loadEnemyImgs() {

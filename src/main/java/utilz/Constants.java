@@ -42,6 +42,24 @@ public class Constants {
 			
 			return 0;
 		}
+		
+		public static int GetMaxHealth(int enemy_type) {
+			switch(enemy_type) {
+			case NIGHTBORNE:
+				return 10;
+				default:
+					return 1;
+			}
+		}
+		
+		public static int GetEnemyDmg(int enemy_type) {
+			switch(enemy_type) {
+			case NIGHTBORNE:
+				return 50;
+				default:
+					return 0;
+			}
+		}
 	}
 
 	public static class Environment {
