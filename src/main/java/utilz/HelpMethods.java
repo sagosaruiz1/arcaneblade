@@ -1,7 +1,13 @@
 package utilz;
 
-import java.awt.geom.Rectangle2D;
+import static utilz.Constants.EnemyConstants.NIGHTBORNE;
 
+import java.awt.Color;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import entities.NightBorne;
 import io.arcaneblade.Game;
 
 // CHECK IF CANMOVEHERE
@@ -76,14 +82,17 @@ public class HelpMethods {
 	}
 
 	public static boolean isFloor(Rectangle2D.Float hitbox, float xSpeed, int[][] lvlData) {
-		return IsSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, lvlData);
+		if (xSpeed > 0)
+			return IsSolid(hitbox.x + hitbox.width + xSpeed, hitbox.y + hitbox.height + 1, lvlData);
+		else
+			return IsSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, lvlData);
 	}
 
 	public static boolean IsAllTilesWalkable(int xStart, int xEnd, int y, int[][] lvlData) {
 		for (int i = 0; i < xEnd - xStart; i++) {
 			if (IsTileSolid(xStart + i, y, lvlData))
 				return false;
-			if(!IsTileSolid(xStart + i, y + 1, lvlData))
+			if (!IsTileSolid(xStart + i, y + 1, lvlData))
 				return false;
 		}
 		return true;
@@ -99,5 +108,31 @@ public class HelpMethods {
 		else
 			return IsAllTilesWalkable(firstXTile, secondXTile, yTile, lvlData);
 
+	}
+
+	public static int[][] GetLevelData(BufferedImage img) {
+		int[][] lvlData = new int[img.getHeight()][img.getWidth()];
+
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getRed();
+				if (value >= 48)
+					value = 0;
+				lvlData[j][i] = value;
+			}
+		return lvlData;
+	}
+	
+	public static ArrayList<NightBorne> GetMobs(BufferedImage img) {
+		ArrayList<NightBorne> list = new ArrayList<>();
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getGreen();
+				if (value == NIGHTBORNE)
+					list.add(new NightBorne(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+			}
+		return list;
 	}
 }

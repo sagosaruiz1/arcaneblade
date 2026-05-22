@@ -39,11 +39,11 @@ public class NightBorne extends Enemy {
 
 	private void updateAttackBox() {
 		if (walkDir == LEFT)
-			attackBox.x = hitbox.x - attackBox.width + (int) (60 * Game.SCALE);
+			attackBox.x = hitbox.x - attackBox.width + (int)(60*Game.SCALE);
 		else
-			attackBox.x = hitbox.x - (int) (-100 * Game.SCALE);
+			attackBox.x = hitbox.x - (int)(-100 * Game.SCALE);
 
-		attackBox.y = hitbox.y - (int) (5 * Game.SCALE);
+		attackBox.y = hitbox.y;
 	}
 
 	private void updateBehaviour(int[][] lvlData, Player player) {
@@ -99,5 +99,15 @@ public class NightBorne extends Enemy {
 	@Override
 	protected boolean isPlayerCloseForAttack(Player player) {
 		return attackBox.intersects(player.getHitbox());
+	}
+
+	public void resetEnemy() {
+		hitbox.x = x;
+		hitbox.y = y;
+		currentHealth = maxHealth;
+		active = true;
+		newState(IDLE);
+		firstUpdate = true;
+		airSpeed = 0;
 	}
 }

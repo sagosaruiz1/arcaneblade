@@ -6,22 +6,18 @@ import static utilz.HelpMethods.*;
 import java.awt.geom.Rectangle2D;
 
 import static utilz.Constants.Directions.*;
+import static utilz.Constants.*;
 
 import io.arcaneblade.Game;
 
 public abstract class Enemy extends Entity {
 	protected int aniIndex, enemyState, enemyType;
-	protected int aniTick, aniSpeed = 25;
+	protected int aniTick;
 	protected boolean firstUpdate = true;
-	protected boolean inAir;
-	protected float fallSpeed;
-	protected float gravity = 0.04f * Game.SCALE;
 	protected float walkSpeed = 0.5f * Game.SCALE;
 	protected int walkDir = LEFT;
 	protected int tileY;
 	protected float attackDistance = Game.TILES_SIZE;
-	protected int maxHealth;
-	protected int currentHealth;
 	protected boolean active = true;
 	protected boolean attackChecked;
 
@@ -41,12 +37,12 @@ public abstract class Enemy extends Entity {
 
 	protected void updateInAir(int[][] lvlData) {
 
-		if (CanMoveHere(hitbox.x, hitbox.y - fallSpeed, hitbox.width, hitbox.height, lvlData)) {
-			hitbox.y += fallSpeed;
-			fallSpeed += gravity;
+		if (CanMoveHere(hitbox.x, hitbox.y - airSpeed, hitbox.width, hitbox.height, lvlData)) {
+			hitbox.y += airSpeed;
+			airSpeed += GRAVITY;
 		} else {
 			inAir = false;
-			hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, fallSpeed);
+			hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
 			tileY = (int) (hitbox.y / Game.TILES_SIZE);
 		}
 	}
@@ -117,7 +113,7 @@ public abstract class Enemy extends Entity {
 
 	protected void updateAnimationTick(Player player) {
 		aniTick++;
-		if (aniTick >= aniSpeed) {
+		if (aniTick >= ANI_SPEED) {
 			aniTick = 0;
 			aniIndex++;
 			if (aniIndex >= GetSpriteAmount(enemyType, enemyState)) {
@@ -136,6 +132,16 @@ public abstract class Enemy extends Entity {
 			walkDir = RIGHT;
 		else
 			walkDir = LEFT;
+	}
+
+	public void resetEnemy() {
+		hitbox.x = x;
+		hitbox.y = y;
+		firstUpdate = true;
+		currentHealth = maxHealth;
+		newState(IDLE);
+		active = true;
+		airSpeed = 0;
 	}
 
 	public int getAniIndex() {

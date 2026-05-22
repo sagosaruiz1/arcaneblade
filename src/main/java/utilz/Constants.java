@@ -4,6 +4,9 @@ import io.arcaneblade.Game;
 
 public class Constants {
 
+	public static final float GRAVITY = 0.04f * Game.SCALE;
+	public static final int ANI_SPEED = 25;
+
 	public static class EnemyConstants {
 		public static final int NIGHTBORNE = 0;
 
@@ -18,15 +21,15 @@ public class Constants {
 
 		public static final int NIGHTBORNE_WIDTH = (int) (NIGHTBORNE_WIDTH_DEFAULT * Game.SCALE * 2);
 		public static final int NIGHTBORNE_HEIGHT = (int) (NIGHTBORNE_HEIGHT_DEFAULT * Game.SCALE * 2);
-		
-		public static final int NB_DRAWOFFSET_X = (int)(29 * Game.SCALE);
-		public static final int NB_DRAWOFFSET_Y = (int)(37 * Game.SCALE);
-		
+
+		public static final int NB_DRAWOFFSET_X = (int) (29 * Game.SCALE);
+		public static final int NB_DRAWOFFSET_Y = (int) (37 * Game.SCALE);
+
 		public static int GetSpriteAmount(int enemy_type, int enemy_state) {
-			
-			switch(enemy_type) {
+
+			switch (enemy_type) {
 			case NIGHTBORNE:
-				switch(enemy_state) {
+				switch (enemy_state) {
 				case IDLE:
 					return 9;
 				case RUNNING:
@@ -39,25 +42,25 @@ public class Constants {
 					return 23;
 				}
 			}
-			
+
 			return 0;
 		}
-		
+
 		public static int GetMaxHealth(int enemy_type) {
-			switch(enemy_type) {
+			switch (enemy_type) {
 			case NIGHTBORNE:
 				return 10;
-				default:
-					return 1;
+			default:
+				return 1;
 			}
 		}
-		
+
 		public static int GetEnemyDmg(int enemy_type) {
-			switch(enemy_type) {
+			switch (enemy_type) {
 			case NIGHTBORNE:
 				return 50;
-				default:
-					return 0;
+			default:
+				return 0;
 			}
 		}
 	}

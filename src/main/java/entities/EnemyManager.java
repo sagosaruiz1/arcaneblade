@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import gamestates.Playing;
 import io.arcaneblade.Game;
+import levels.Level;
 import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.*;
 
@@ -19,18 +20,22 @@ public class EnemyManager {
 	public EnemyManager(Playing playing) {
 		this.playing = playing;
 		loadEnemyImgs();
-		addEnemies();
 	}
 
-	private void addEnemies() {
-		mobs = LoadSave.GetMobs();
+	public void loadEnemies(Level level) {
+		mobs = level.getMobs();
 		System.out.println("size of mobs: " + mobs.size());
 	}
 
 	public void update(int[][] lvlData, Player player) {
+		boolean isAnyActive = false;
 		for (NightBorne nb : mobs)
-			if (nb.isActive())
+			if (nb.isActive()) {
 				nb.update(lvlData, player);
+				isAnyActive = true;
+			}
+		if(!isAnyActive)
+			playing.setLevelCompleted(true);
 	}
 
 	public void draw(Graphics g, int xLvlOffset) {
@@ -41,11 +46,13 @@ public class EnemyManager {
 		for (NightBorne nb : mobs)
 			if (nb.isActive()) {
 				int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
-
+				
 				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
-						(int) nb.getHitbox().x - xLvlOffset + nb.flipX(), (int) nb.getHitbox().y - yOffset,
-						NIGHTBORNE_WIDTH * nb.flipW(), NIGHTBORNE_HEIGHT, null);
-				nb.drawAttackBox(g, xLvlOffset);
+						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX(),
+						(int) (nb.getHitbox().y - yOffset),
+						NIGHTBORNE_WIDTH * nb.flipW(),
+						NIGHTBORNE_HEIGHT, null);
+//				nb.drawAttackBox(g, xLvlOffset);
 			}
 	}
 
@@ -66,5 +73,10 @@ public class EnemyManager {
 				nbArr[j][i] = temp.getSubimage(i * NIGHTBORNE_WIDTH_DEFAULT, j * NIGHTBORNE_HEIGHT_DEFAULT,
 						NIGHTBORNE_WIDTH_DEFAULT, NIGHTBORNE_HEIGHT_DEFAULT);
 
+	}
+	
+	public void resetAllEnemies() {
+		for (NightBorne nb : mobs)
+			nb.resetEnemy();
 	}
 }

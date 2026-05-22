@@ -10,6 +10,10 @@ public abstract class Entity {
 	protected float x, y;
 	protected int width, height;
 	protected Rectangle2D.Float hitbox;
+	protected float airSpeed;
+	protected boolean inAir = false;
+	protected int maxHealth;
+	protected int currentHealth;
  
 	public Entity(float x, float y, int width, int height) {
 		this.x = x;
