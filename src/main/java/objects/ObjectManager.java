@@ -87,12 +87,12 @@ public class ObjectManager {
 				gc.update();
 	}
 
-	public void draw(Graphics g, int xLvlOffset) {
-		drawPotions(g, xLvlOffset);
-		drawContainers(g, xLvlOffset);
+	public void draw(Graphics g, int xLvlOffset, int yLvlOffset) {
+		drawPotions(g, xLvlOffset, yLvlOffset);
+		drawContainers(g, xLvlOffset, yLvlOffset);
 	}
 
-	private void drawContainers(Graphics g, int xLvlOffset) {
+	private void drawContainers(Graphics g, int xLvlOffset, int yLvlOffset) {
 		for (GameContainer gc : containers)
 			if (gc.isActive()) {
 				int type = 0;
@@ -101,11 +101,12 @@ public class ObjectManager {
 
 				g.drawImage(containerImgs[type][gc.getAniIndex()],
 						(int) (gc.getHitbox().x - gc.getxDrawOffset() - xLvlOffset),
-						(int) (gc.getHitbox().y - gc.getyDrawOffset()), CONTAINER_WIDTH, CONTAINER_HEIGHT, null);
+						(int) (gc.getHitbox().y - gc.getyDrawOffset() - yLvlOffset),
+						CONTAINER_WIDTH, CONTAINER_HEIGHT, null);
 			}
 	}
 
-	private void drawPotions(Graphics g, int xLvlOffset) {
+	private void drawPotions(Graphics g, int xLvlOffset, int yLvlOffset) {
 		for (Potion p : potions)
 			if (p.isActive()) {
 				int type = 0;
@@ -113,7 +114,8 @@ public class ObjectManager {
 					type = 1;
 				g.drawImage(potionImgs[type][p.getAniIndex()],
 						(int) (p.getHitbox().x - p.getxDrawOffset() - xLvlOffset),
-						(int) (p.getHitbox().y - p.getyDrawOffset()), POTION_WIDTH, POTION_HEIGHT, null);
+						(int) (p.getHitbox().y - p.getyDrawOffset() - yLvlOffset),
+						POTION_WIDTH, POTION_HEIGHT, null);
 			}
 	}
 

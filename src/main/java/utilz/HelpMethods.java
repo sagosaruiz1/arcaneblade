@@ -30,7 +30,8 @@ public class HelpMethods {
 		int maxWidth = lvlData[0].length * Game.TILES_SIZE;
 		if (x < 0 || x >= maxWidth)
 			return true;
-		if (y < 0 || y >= Game.GAME_HEIGHT)
+		int maxHeight = lvlData.length * Game.TILES_SIZE;
+		if (y < 0 || y >= maxHeight)
 			return true;
 
 		float xIndex = x / Game.TILES_SIZE;

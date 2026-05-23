@@ -39,12 +39,20 @@ public class NightBorne extends Enemy {
 	}
 
 	private void updateAttackBox() {
+//		if (walkDir == LEFT)
+//			attackBox.x = hitbox.x - attackBox.width + (int)(60*Game.SCALE);
+//		else
+//			attackBox.x = hitbox.x - (int)(-100 * Game.SCALE);
+//
+//		attackBox.y = hitbox.y;
+		
+		// AFTER — clean simple logic:
 		if (walkDir == LEFT)
-			attackBox.x = hitbox.x - attackBox.width + (int)(60*Game.SCALE);
+		    attackBox.x = hitbox.x - attackBox.width;
 		else
-			attackBox.x = hitbox.x - (int)(-100 * Game.SCALE);
+		    attackBox.x = hitbox.x + hitbox.width;
 
-		attackBox.y = hitbox.y;
+		attackBox.y = hitbox.y + (hitbox.height / 2) - (attackBox.height / 2);
 	}
 
 	private void updateBehaviour(int[][] lvlData, Player player) {
@@ -78,12 +86,17 @@ public class NightBorne extends Enemy {
 		}
 	}
 
-	public void drawAttackBox(Graphics g, int xLvlOffset) {
+	public void drawAttackBox(Graphics g, int xLvlOffset, int yLvlOffset) {
 		g.setColor(Color.red);
-		g.drawRect((int) (attackBox.x - xLvlOffset), (int) attackBox.y, (int) attackBox.width, (int) attackBox.height);
+		g.drawRect((int) (attackBox.x - xLvlOffset),
+				(int) attackBox.y - yLvlOffset,
+				(int) attackBox.width,
+				(int) attackBox.height);
 		
 		g.setColor(Color.black);
-	    g.drawRect((int) (hitbox.x - xLvlOffset), (int) hitbox.y, (int) hitbox.width, (int) hitbox.height);
+	    g.drawRect((int) (hitbox.x - xLvlOffset),
+	    		(int) hitbox.y - yLvlOffset,
+	    		(int) hitbox.width, (int) hitbox.height);
 	}
 
 	public int flipX() {

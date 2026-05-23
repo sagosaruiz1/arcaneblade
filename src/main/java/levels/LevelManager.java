@@ -21,26 +21,27 @@ public class LevelManager {
 		levels = new ArrayList<>();
 		buildAllLevels();
 	}
-	
+
 	public void loadNextLevel() {
 		lvlIndex++;
-		if(lvlIndex >= levels.size()) {
+		if (lvlIndex >= levels.size()) {
 			lvlIndex = 0;
 			System.out.println("No more levels! Game Completed!");
 			Gamestate.state = Gamestate.MENU;
 		}
-		
+
 		Level newLevel = levels.get(lvlIndex);
 		game.getPlaying().getEnemyManager().loadEnemies(newLevel);
 		game.getPlaying().getPlayer().loadLvlData(newLevel.getLevelData());
 		game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
+		game.getPlaying().setMaxLvlOffsetY(newLevel.getLvlOffsetY());
 		game.getPlaying().getObjectManager().loadObjects(newLevel);
-		
+
 	}
 
 	private void buildAllLevels() {
 		BufferedImage[] allLevels = LoadSave.GetAllLevels();
-		for(BufferedImage img : allLevels)
+		for (BufferedImage img : allLevels)
 			levels.add(new Level(img));
 	}
 
@@ -56,27 +57,38 @@ public class LevelManager {
 	}
 
 	// DRAW THE GAME MAP
-	public void draw(Graphics g, int lvlOffset) {
+	public void draw(Graphics g, int xLvlOffset, int yLvlOffset) {
+		int[][] lvlData = levels.get(lvlIndex).getLevelData();
 
-		for (int j = 0; j < Game.TILES_IN_HEIGHT; j++)
-			for (int i = 0; i < levels.get(lvlIndex).getLevelData()[0].length; i++) {
+		int startTileX = xLvlOffset / Game.TILES_SIZE;
+		int startTileY = yLvlOffset / Game.TILES_SIZE;
+		int endTileX = Math.min(startTileX + Game.TILES_IN_WIDTH + 1, lvlData[0].length);
+		int endTileY = Math.min(startTileY + Game.TILES_IN_HEIGHT + 1, lvlData.length);
+
+		for (int j = startTileY; j < endTileY; j++)
+			for (int i = startTileX; i < endTileX; i++) {
 				int index = levels.get(lvlIndex).getSpriteIndex(i, j);
-				g.drawImage(levelSprite[index], Game.TILES_SIZE * i - lvlOffset, Game.TILES_SIZE * j, Game.TILES_SIZE, Game.TILES_SIZE, null);
+				if (index < 0 || index >= levelSprite.length)
+					continue;
+				g.drawImage(levelSprite[index],
+						Game.TILES_SIZE * i - xLvlOffset,
+						Game.TILES_SIZE * j - yLvlOffset,
+						Game.TILES_SIZE, Game.TILES_SIZE, null);
 			}
 	}
 
 	public void update() {
 
 	}
-	
+
 	public Level getCurrentLevel() {
 		return levels.get(lvlIndex);
 	}
-	
+
 	public int getAmountOfLevels() {
 		return levels.size();
 	}
-	
+
 	public int getLvlIndex() {
 		return lvlIndex;
 	}

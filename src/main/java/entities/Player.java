@@ -167,10 +167,13 @@ public class Player extends Entity {
 		healthWidth = (int) ((currentHealth / (float) maxHealth) * healthBarWidth);
 	}
 
-	public void render(Graphics g, int lvlOffset) {
+	public void render(Graphics g, int xLvlOffset, int yLvlOffset) {
 
-		g.drawImage(animations[playerAction][aniIndex], (int) (hitbox.x - xDrawOffset) - lvlOffset + flipX,
-				(int) (hitbox.y - yDrawOffset), width * flipW, height, null);
+		g.drawImage(animations[playerAction][aniIndex],
+				(int) (hitbox.x - xDrawOffset) - xLvlOffset + flipX,
+				(int) (hitbox.y - yDrawOffset) - yLvlOffset,
+				width * flipW, height, null);
+		
 //		drawHitbox(g, lvlOffset);
 //		drawAttackBox(g, lvlOffset);
 		drawUI(g);

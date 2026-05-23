@@ -38,25 +38,30 @@ public class EnemyManager {
 			playing.setLevelCompleted(true);
 	}
 
-	public void draw(Graphics g, int xLvlOffset) {
-		drawMobs(g, xLvlOffset);
+	public void draw(Graphics g, int xLvlOffset, int yLvlOffset) {
+		drawMobs(g, xLvlOffset, yLvlOffset);
 	}
 
-	private void drawMobs(Graphics g, int xLvlOffset) {
+	private void drawMobs(Graphics g, int xLvlOffset, int yLvlOffset) {
 		for (NightBorne nb : mobs)
 			if (nb.isActive()) {
-				int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
-				
-				int extraX = 10;
-				int extraY = 10;
-				
+//				int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
+//				
+//				int extraX = 10;
+//				int extraY = 10;
+//				
+//				
+//				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
+//						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() + extraX,
+//						(int) (nb.getHitbox().y - yOffset) - extraY - yLvlOffset,
+//						NIGHTBORNE_WIDTH * nb.flipW(),
+//						NIGHTBORNE_HEIGHT, null);
 				
 				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
-						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() + extraX,
-						(int) (nb.getHitbox().y - yOffset) - extraY,
-						NIGHTBORNE_WIDTH * nb.flipW(),
-						NIGHTBORNE_HEIGHT, null);
-				nb.drawAttackBox(g, xLvlOffset);
+					    (int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() - NB_DRAWOFFSET_X,
+					    (int) (nb.getHitbox().y) - NB_DRAWOFFSET_Y,
+					    NIGHTBORNE_WIDTH * nb.flipW(), NIGHTBORNE_HEIGHT, null);
+				nb.drawAttackBox(g, xLvlOffset, yLvlOffset);
 			}
 	}
 

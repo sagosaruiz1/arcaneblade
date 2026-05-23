@@ -52,8 +52,10 @@ public class Constants {
 		public static final int NIGHTBORNE_WIDTH = (int) (NIGHTBORNE_WIDTH_DEFAULT * Game.SCALE * 2);
 		public static final int NIGHTBORNE_HEIGHT = (int) (NIGHTBORNE_HEIGHT_DEFAULT * Game.SCALE * 2);
 
-		public static final int NB_DRAWOFFSET_X = (int) (34 * Game.SCALE);
-		public static final int NB_DRAWOFFSET_Y = (int) (36 * Game.SCALE);
+//		public static final int NB_DRAWOFFSET_X = (int) (34 * Game.SCALE);
+//		public static final int NB_DRAWOFFSET_Y = (int) (36 * Game.SCALE);
+		public static final int NB_DRAWOFFSET_X = (int) (70 * Game.SCALE);
+		public static final int NB_DRAWOFFSET_Y = (int) (100 * Game.SCALE);
 
 		public static int GetSpriteAmount(int enemy_type, int enemy_state) {
 

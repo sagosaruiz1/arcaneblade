@@ -40,6 +40,7 @@ public class LoadSave {
 	public static final String CONTAINER_ATLAS = "/ui/objects_sprites.png";
 	public static final String DEATH_SCREEN = "/ui/death_screen.png";
 	public static final String OPTIONS_MENU = "/ui/options_background.png";
+	public static final String PLAYING_BACKGROUND_IMG ="/ui/playing_background_img.png";
 	
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

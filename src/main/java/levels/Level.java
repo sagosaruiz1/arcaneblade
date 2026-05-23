@@ -19,9 +19,13 @@ public class Level {
 	private ArrayList<NightBorne> mobs;
 	private ArrayList<Potion> potions;
 	private ArrayList<GameContainer> containers;
+	
 	private int lvlTilesWide;
+	private int lvlTilesTall;
 	private int maxTilesOffset;
+	private int maxTilesOffsetY;
 	private int maxLvlOffsetX;
+	private int maxLvlOffsetY;
 
 	public Level(BufferedImage img) {
 		this.img = img;
@@ -42,8 +46,11 @@ public class Level {
 
 	private void calcLvlOffsets() {
 		lvlTilesWide = img.getWidth();
+		lvlTilesTall = img.getHeight();
 		maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
+		maxTilesOffsetY = lvlTilesTall - Game.TILES_IN_HEIGHT;
 		maxLvlOffsetX = Game.TILES_SIZE * maxTilesOffset;
+		maxLvlOffsetY = Game.TILES_SIZE * maxTilesOffsetY;
 	}
 
 	private void createEnemies() {
@@ -64,6 +71,10 @@ public class Level {
 
 	public int getLvlOffset() {
 		return maxLvlOffsetX;
+	}
+	
+	public int getLvlOffsetY() {
+		return maxLvlOffsetY;
 	}
 
 	public ArrayList<NightBorne> getMobs() {

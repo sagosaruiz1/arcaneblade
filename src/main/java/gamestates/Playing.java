@@ -30,9 +30,13 @@ public class Playing extends State implements Statemethods {
 	private boolean paused = false;
 
 	private int xLvlOffset;
-	private int leftBorder = (int) (0.2 * Game.GAME_WIDTH);
-	private int rightBorder = (int) (0.8 * Game.GAME_WIDTH);
+	private int leftBorder = (int) (0.5 * Game.GAME_WIDTH);
+	private int rightBorder = (int) (0.5 * Game.GAME_WIDTH);
 	private int maxLvlOffsetX;
+	private int yLvlOffset;
+	private int topBorder = (int) (0.5 * Game.GAME_HEIGHT);
+	private int bottomBorder = (int) (0.5 * Game.GAME_HEIGHT);
+	private int maxLvlOffsetY;
 
 	private BufferedImage backgroundImg, pillars;
 
@@ -44,7 +48,7 @@ public class Playing extends State implements Statemethods {
 		super(game);
 		initClasses();
 
-//		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BG_IMG);
+		backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BACKGROUND_IMG);
 //		pillars = LoadSave.GetSpriteAtlas(LoadSave.PILLARS);
 
 		calcLvlOffset();
@@ -63,6 +67,7 @@ public class Playing extends State implements Statemethods {
 
 	private void calcLvlOffset() {
 		maxLvlOffsetX = levelManager.getCurrentLevel().getLvlOffset();
+		maxLvlOffsetY = levelManager.getCurrentLevel().getLvlOffsetY();
 	}
 
 	private void initClasses() {
@@ -98,18 +103,34 @@ public class Playing extends State implements Statemethods {
 
 	// PLAYER VIEW
 	private void checkCloseToBorder() {
+//		int playerX = (int) player.getHitbox().x;
+//		int diff = playerX - xLvlOffset;
+//
+//		if (diff > rightBorder)
+//			xLvlOffset += diff - rightBorder;
+//		else if (diff < leftBorder)
+//			xLvlOffset += diff - leftBorder;
+//
+//		if (xLvlOffset > maxLvlOffsetX)
+//			xLvlOffset = maxLvlOffsetX;
+//		else if (xLvlOffset < 0)
+//			xLvlOffset = 0;
+		
 		int playerX = (int) player.getHitbox().x;
-		int diff = playerX - xLvlOffset;
-
-		if (diff > rightBorder)
-			xLvlOffset += diff - rightBorder;
-		else if (diff < leftBorder)
-			xLvlOffset += diff - leftBorder;
-
-		if (xLvlOffset > maxLvlOffsetX)
-			xLvlOffset = maxLvlOffsetX;
-		else if (xLvlOffset < 0)
-			xLvlOffset = 0;
+		int diffX = playerX - xLvlOffset;
+		if(diffX > rightBorder)
+			xLvlOffset += diffX - rightBorder;
+		else if (diffX < leftBorder)
+			xLvlOffset += diffX - leftBorder;
+		xLvlOffset = Math.max(0, Math.min(xLvlOffset, maxLvlOffsetX));
+		
+		int playerY = (int) player.getHitbox().y;
+		int diffY = playerY - yLvlOffset;
+		if(diffY > bottomBorder)
+			yLvlOffset += diffY - bottomBorder;
+		else if (diffY < topBorder)
+			yLvlOffset += diffY - topBorder;
+		yLvlOffset = Math.max(0, Math.min(yLvlOffset, maxLvlOffsetY));
 	}
 
 	@Override
@@ -118,10 +139,10 @@ public class Playing extends State implements Statemethods {
 
 		drawPillars(g);
 
-		levelManager.draw(g, xLvlOffset);
-		player.render(g, xLvlOffset);
-		enemyManager.draw(g, xLvlOffset);
-		objectManager.draw(g, xLvlOffset);
+		levelManager.draw(g, xLvlOffset, yLvlOffset);
+		player.render(g, xLvlOffset, yLvlOffset);
+		enemyManager.draw(g, xLvlOffset, yLvlOffset);
+		objectManager.draw(g, xLvlOffset, yLvlOffset);
 
 		if (paused) {
 			g.setColor(new Color(0, 0, 0, 150));
@@ -146,6 +167,8 @@ public class Playing extends State implements Statemethods {
 		paused = false;
 		lvlCompleted = false;
 		playerDying = false;
+		xLvlOffset = 0;
+		yLvlOffset = 0;
 		player.resetAll();
 		enemyManager.resetAllEnemies();
 		objectManager.resetAllObjects();
@@ -198,7 +221,7 @@ public class Playing extends State implements Statemethods {
 				pauseOverlay.mouseReleased(e);
 			else if (lvlCompleted)
 				levelCompletedOverlay.mouseReleased(e);
-		} else 
+		} else
 			gameOverOverlay.mouseReleased(e);
 	}
 
@@ -209,7 +232,7 @@ public class Playing extends State implements Statemethods {
 				pauseOverlay.mouseMoved(e);
 			else if (lvlCompleted)
 				levelCompletedOverlay.mouseMoved(e);
-		} else 
+		} else
 			gameOverOverlay.mouseMoved(e);
 	}
 
@@ -274,6 +297,10 @@ public class Playing extends State implements Statemethods {
 
 	public void setMaxLvlOffset(int lvlOffset) {
 		this.maxLvlOffsetX = lvlOffset;
+	}
+
+	public void setMaxLvlOffsetY(int lvlOffsetY) {
+		this.maxLvlOffsetY = lvlOffsetY;
 	}
 
 	public void unpauseGame() {
