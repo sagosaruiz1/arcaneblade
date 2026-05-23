@@ -47,12 +47,16 @@ public class EnemyManager {
 			if (nb.isActive()) {
 				int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
 				
+				int extraX = 10;
+				int extraY = 10;
+				
+				
 				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
-						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX(),
-						(int) (nb.getHitbox().y - yOffset),
+						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() + extraX,
+						(int) (nb.getHitbox().y - yOffset) - extraY,
 						NIGHTBORNE_WIDTH * nb.flipW(),
 						NIGHTBORNE_HEIGHT, null);
-//				nb.drawAttackBox(g, xLvlOffset);
+				nb.drawAttackBox(g, xLvlOffset);
 			}
 	}
 

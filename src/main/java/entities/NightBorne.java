@@ -22,8 +22,9 @@ public class NightBorne extends Enemy {
 
 	public NightBorne(float x, float y) {
 		super(x, y, NIGHTBORNE_WIDTH, NIGHTBORNE_HEIGHT, NIGHTBORNE);
-		initHitbox(x, y, (int) (20 * Game.SCALE), (int) (25 * Game.SCALE));
+		initHitbox(x, y, (int) (30 * Game.SCALE), (int) (22 * Game.SCALE));
 		initAttackBox();
+		
 	}
 
 	private void initAttackBox() {
@@ -80,6 +81,9 @@ public class NightBorne extends Enemy {
 	public void drawAttackBox(Graphics g, int xLvlOffset) {
 		g.setColor(Color.red);
 		g.drawRect((int) (attackBox.x - xLvlOffset), (int) attackBox.y, (int) attackBox.width, (int) attackBox.height);
+		
+		g.setColor(Color.black);
+	    g.drawRect((int) (hitbox.x - xLvlOffset), (int) hitbox.y, (int) hitbox.width, (int) hitbox.height);
 	}
 
 	public int flipX() {

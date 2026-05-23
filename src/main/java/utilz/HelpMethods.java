@@ -1,6 +1,7 @@
 package utilz;
 
 import static utilz.Constants.EnemyConstants.NIGHTBORNE;
+import static utilz.Constants.ObjectConstants.*;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 
 import entities.NightBorne;
 import io.arcaneblade.Game;
+import objects.GameContainer;
+import objects.Potion;
 
 // CHECK IF CANMOVEHERE
 public class HelpMethods {
@@ -132,6 +135,30 @@ public class HelpMethods {
 				int value = color.getGreen();
 				if (value == NIGHTBORNE)
 					list.add(new NightBorne(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+			}
+		return list;
+	}
+	
+	public static ArrayList<Potion> GetPotions(BufferedImage img) {
+		ArrayList<Potion> list = new ArrayList<>();
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getBlue();
+				if (value == HEALTH_POTION || value == ENERGY_POTION)
+					list.add(new Potion(i*Game.TILES_SIZE, j * Game.TILES_SIZE, value));	
+			}
+		return list;
+	}
+	
+	public static ArrayList<GameContainer> GetContainers(BufferedImage img) {
+		ArrayList<GameContainer> list = new ArrayList<>();
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getBlue();
+				if (value == BARREL || value == BOX)
+					list.add(new GameContainer(i*Game.TILES_SIZE, j * Game.TILES_SIZE, value));	
 			}
 		return list;
 	}

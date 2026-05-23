@@ -36,9 +36,36 @@ public class Player extends Entity {
 	private float yDrawOffset = 128 * Game.SCALE;
 
 	// Gravity
-	private float jumpSpeed = -2.25f * Game.SCALE;
+	private float jumpSpeed = -1.75f * Game.SCALE;
 	private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
 
+	// Variable jump
+	private boolean jumpHeld = false;
+	private int jumpHeldTicks = 0;
+	private int maxJumpHoldTicks = 15;
+
+	// Coyote time
+	private int coyoteTimer = 0;
+	private int coyoteTimerMax = 6;
+
+	// Dash
+	private boolean dashing = false;
+	private int dashTick = 0;
+	private float dashDistance = 250f * Game.SCALE;
+	private float dashProgress = 20f;
+	private float dashSpeed = 0.015f;
+	private int dashCooldown = 0;
+	private int dashCooldownMax = 40;
+
+	// Wall slide
+	private boolean onWall = false;
+	private float wallSlideSpeed = 0.5f * Game.SCALE;
+
+	// Acceleration
+	private float currentSpeedX = 0;
+	private float maxSpeed = 1.2f * Game.SCALE;
+	private float acceleration = 0.1f * Game.SCALE;
+	private float deceleration = 2.0f * Game.SCALE;
 
 	// STATUS BAR UI
 	private BufferedImage statusBarImg;
@@ -85,17 +112,36 @@ public class Player extends Entity {
 
 	public void update() {
 		updateHealthBar();
-		if(currentHealth <= 0) {
-			playing.setGameOver(true);
+		if (currentHealth <= 0) {
+			if (playerAction != DEATH) {
+				playerAction = DEATH;
+				aniTick = 0;
+				aniIndex = 0;
+				playing.setPlayerDying(true);
+			} else {
+
+				int speed = utilz.Constants.PlayerConstants.GetAniSpeed(playerAction);
+
+				if (aniIndex == GetSpriteAmount(DEATH) - 1 && aniTick >= speed - 1) {
+					playing.setGameOver(true);
+				} else
+					updateAnimationTick();
+			}
 			return;
 		}
 		updateAttackBox();
 
 		updatePos();
+		if (moving)
+			checkPotionTouched();
 		if (attacking)
 			checkAttack();
 		updateAnimationTick();
 		setAnimation();
+	}
+
+	private void checkPotionTouched() {
+		playing.checkPotionTouched(hitbox);
 	}
 
 	private void checkAttack() {
@@ -103,14 +149,17 @@ public class Player extends Entity {
 			return;
 		attackChecked = true;
 		playing.checkEnemyHit(attackBox);
+		playing.checkObjectHit(attackBox);
+		playing.getGame().getAudioPlayer().playAttackSound();
 	}
 
 	private void updateAttackBox() {
 		if (right) {
 			attackBox.x = hitbox.x + hitbox.width + (int) (Game.SCALE * 5);
-		} else if (left){
+		} else if (left) {
 			attackBox.x = hitbox.x - hitbox.width - (int) (Game.SCALE * 25);
-		} else {}
+		} else {
+		}
 		attackBox.y = hitbox.y + (Game.SCALE * 10);
 	}
 
@@ -190,6 +239,9 @@ public class Player extends Entity {
 			else
 				playerAction = FALLING;
 		}
+		
+		if(dashing)
+			playerAction = DASHING;
 
 		if (attacking) {
 
@@ -213,58 +265,190 @@ public class Player extends Entity {
 	private void updatePos() {
 
 		moving = false;
+		
+		// Dash cooldown tick
+		if (dashCooldown > 0)
+			dashCooldown--;
+
+		// Handle dash movement
+		if (dashing) {
+			dashProgress += dashSpeed;
+			
+			float t = dashProgress;
+			float easeOut = t * t * (3f - 2f * t);
+			easeOut = 1f - easeOut; // invert so it goes fast-to-slow
+			float frameMove = dashDistance * dashSpeed * easeOut;
+			
+			float dSpeed = (flipW == 1) ? frameMove : -frameMove;
+			
+			if(CanMoveHere(hitbox.x + dSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData))
+				hitbox.x += dSpeed;
+			else
+				dashing = false;
+			if(dashProgress >= 1f)
+				dashing = false;
+			moving = true;
+//			return;
+		}
 
 		if (jump)
 			jump();
-//		if (!left && !right && !inAir)
-//			return;
-		if (!inAir)
-			if ((!left && !right) || (right && left))
-				return;
 
-		float xSpeed = 0;
-
+		// Acceleration / deceleration
 		if (left) {
-			xSpeed -= playerSpeed;
+			currentSpeedX = Math.max(currentSpeedX - acceleration, -maxSpeed);
 			flipX = width;
 			flipW = -1;
-		}
-		if (right) {
-			xSpeed += playerSpeed;
+		} else if (right) {
+			currentSpeedX = Math.min(currentSpeedX + acceleration, maxSpeed);
 			flipX = 0;
 			flipW = 1;
+		} else {
+			if (currentSpeedX > 0)
+				currentSpeedX = Math.min(0, currentSpeedX - deceleration);
+			else if (currentSpeedX < 0)
+				currentSpeedX = Math.min(0, currentSpeedX + deceleration);
 		}
-
-		if (!inAir)
-			if (!isEntityOnFloor(hitbox, lvlData))
-				inAir = true;
-
-		if (inAir) {
+		
+		// Coyote time
+		if (!inAir) {
+			if (!isEntityOnFloor(hitbox, lvlData)) {
+				coyoteTimer++;
+				if (coyoteTimer > coyoteTimerMax)
+					inAir = true;
+			} else {
+				coyoteTimer = 0;
+			}
+		}
+		
+		// Wall detection
+		if(inAir) {
+			boolean hitWallRight = !CanMoveHere(hitbox.x + playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
+			boolean hitWallLeft = !CanMoveHere(hitbox.x + playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
+			onWall = (right && hitWallRight) || (left && hitWallLeft);
+		} else {
+			onWall = false;
+		}
+		
+		// Variable jump hold
+		if(jumpHeld) {
+			if(jump && jumpHeldTicks < maxJumpHoldTicks) {
+				airSpeed -= 0.08f * Game.SCALE;
+				jumpHeldTicks++;
+			} else {
+				jumpHeld = false;
+			}
+		}
+		
+		// Wall slide - slow fall when pressing into wall
+		if(inAir) {
+			if(onWall && airSpeed > 0)
+				airSpeed = wallSlideSpeed;
+			
 			if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
 				hitbox.y += airSpeed;
 				airSpeed += GRAVITY;
-				updateXPos(xSpeed);
+				updateXPos(currentSpeedX);
 			} else {
 				hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
-				if (airSpeed > 0)
+				if(airSpeed > 0)
 					resetInAir();
 				else
 					airSpeed = fallSpeedAfterCollision;
-				updateXPos(xSpeed);
+				updateXPos(currentSpeedX);
 			}
+		} else {
+			updateXPos(currentSpeedX);
+		}
+		if(currentSpeedX != 0)
+			moving = true;
 
-		} else
-			updateXPos(xSpeed);
-		moving = true;
+// -----OLD CODE-----
+//		moving = false;
+//
+//		if (jump)
+//			jump();
+//
+//		if (!inAir)
+//			if ((!left && !right) || (right && left))
+//				return;
+//
+//		float xSpeed = 0;
+//
+//		if (left) {
+//			xSpeed -= playerSpeed;
+//			flipX = width;
+//			flipW = -1;
+//		}
+//		if (right) {
+//			xSpeed += playerSpeed;
+//			flipX = 0;
+//			flipW = 1;
+//		}
+//
+//		if (!inAir)
+//			if (!isEntityOnFloor(hitbox, lvlData))
+//				inAir = true;
+//
+//		if (inAir) {
+//			if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
+//				hitbox.y += airSpeed;
+//				airSpeed += GRAVITY;
+//				updateXPos(xSpeed);
+//			} else {
+//				hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
+//				if (airSpeed > 0)
+//					resetInAir();
+//				else
+//					airSpeed = fallSpeedAfterCollision;
+//				updateXPos(xSpeed);
+//			}
+//
+//		} else
+//			updateXPos(xSpeed);
+//		moving = true;
 
 	}
 
 	private void jump() {
-		if (inAir)
+		if (inAir && coyoteTimer > coyoteTimerMax) {
+			if (onWall) {
+				inAir = true;
+				airSpeed = jumpSpeed;
+				jumpHeld = true;
+				jumpHeldTicks = 0;
+				if (right) {
+					hitbox.x -= playerSpeed * 3;
+					flipX = width;
+					flipW = -1;
+				} else {
+					hitbox.x += playerSpeed * 3;
+					flipX = 0;
+					flipW = 1;
+				}
+			}
 			return;
+		}
 		inAir = true;
+		coyoteTimer = coyoteTimerMax + 1;
 		airSpeed = jumpSpeed;
+		jumpHeld = true;
+		jumpHeldTicks = 0;
 
+// -----OLD CODE-----
+//		if (inAir)
+//			return;
+//		inAir = true;
+//		airSpeed = jumpSpeed;
+
+	}
+
+	public void dash() {
+		if (dashCooldown > 0 || dashing)
+			return;
+		dashing = true;
+		dashProgress = 0f;
+		dashCooldown = dashCooldownMax;
 	}
 
 	private void resetInAir() {
@@ -290,6 +474,10 @@ public class Player extends Entity {
 			// gameOver();
 		} else if (currentHealth >= maxHealth)
 			currentHealth = maxHealth;
+	}
+
+	public void changePower(int value) {
+		System.out.println("Added energy!");
 	}
 
 	private void loadAnimations() {
@@ -326,6 +514,8 @@ public class Player extends Entity {
 	public void resetDirBooleans() {
 		left = false;
 		right = false;
+		jumpHeld = false;
+		dashing = false;
 	}
 
 	public void setAttacking(boolean attacking) {
@@ -352,7 +542,6 @@ public class Player extends Entity {
 		this.left = left;
 	}
 
-
 	public boolean isRight() {
 		return right;
 	}
@@ -372,11 +561,11 @@ public class Player extends Entity {
 		moving = false;
 		playerAction = IDLE;
 		currentHealth = maxHealth;
-		
+
 		hitbox.x = x;
 		hitbox.y = y;
-		
-		if(!isEntityOnFloor(hitbox, lvlData))
+
+		if (!isEntityOnFloor(hitbox, lvlData))
 			inAir = true;
 	}
 }

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 
 import entities.NightBorne;
 import io.arcaneblade.Game;
+import objects.GameContainer;
+import objects.Potion;
+import utilz.HelpMethods;
 import utilz.LoadSave;
 import static utilz.HelpMethods.GetLevelData;
 import static utilz.HelpMethods.GetMobs;
@@ -14,6 +17,8 @@ public class Level {
 	private BufferedImage img;
 	private int[][] lvlData;
 	private ArrayList<NightBorne> mobs;
+	private ArrayList<Potion> potions;
+	private ArrayList<GameContainer> containers;
 	private int lvlTilesWide;
 	private int maxTilesOffset;
 	private int maxLvlOffsetX;
@@ -22,7 +27,17 @@ public class Level {
 		this.img = img;
 		createLevelData();
 		createEnemies();
+		createPotions();
+		createContainers();
 		calcLvlOffsets();
+	}
+
+	private void createContainers() {
+		containers = HelpMethods.GetContainers(img);
+	}
+
+	private void createPotions() {
+		potions = HelpMethods.GetPotions(img);
 	}
 
 	private void calcLvlOffsets() {
@@ -53,5 +68,13 @@ public class Level {
 
 	public ArrayList<NightBorne> getMobs() {
 		return mobs;
+	}
+	
+	public ArrayList<Potion> getPotions() {
+		return potions;
+	}
+	
+	public ArrayList<GameContainer> getContainers() {
+		return containers;
 	}
 }
