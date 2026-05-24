@@ -25,6 +25,8 @@ public class LoadSave {
 
 	public static final String LEVEL_ATLAS = "/maps/tilemap.png";
 	
+	public static final String LIGHTNING_STRIKE ="/ui/lightning_strike.png";
+	
 	public static final String MENU_BUTTONS = "/ui/button_atlas.png";
 	public static final String MENU_BACKGROUND = "/ui/menu_background.png";
 	public static final String MENU_BACKGROUND_IMG = "/ui/background_menu.png";

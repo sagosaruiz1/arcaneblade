@@ -16,9 +16,11 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import entities.EnemyManager;
+import entities.NightBorne;
 import entities.Player;
 import io.arcaneblade.Game;
 import levels.LevelManager;
+import objects.LightningStrike;
 import objects.ObjectManager;
 import ui.GameOverOverlay;
 import ui.LevelCompletedOverlay;
@@ -46,12 +48,14 @@ public class Playing extends State implements Statemethods {
 	private int bottomBorder = (int) (0.5 * Game.GAME_HEIGHT);
 	private int maxLvlOffsetY;
 
-	private BufferedImage[] zoneBackgrounds;
+	private BufferedImage[] zoneBackgrounds, lightningFrames;
 	private BufferedImage backgroundImg, pillars;
 
 	private boolean gameOver;
 	private boolean lvlCompleted;
 	private boolean playerDying;
+
+	private ArrayList<LightningStrike> lightningStrikes = new ArrayList<>();
 
 	private float glowPulse = 0f;
 	private float glowDir = 0.02f;
@@ -92,10 +96,47 @@ public class Playing extends State implements Statemethods {
 		objectManager.loadObjects(levelManager.getCurrentLevel());
 		calcLvlOffset();
 	}
-
 	private void loadStartLevel() {
 		enemyManager.loadEnemies(levelManager.getCurrentLevel());
 		objectManager.loadObjects(levelManager.getCurrentLevel());
+	}
+
+	private void loadLightningFrames() {
+		BufferedImage sheet = LoadSave.GetSpriteAtlas(LoadSave.LIGHTNING_STRIKE);
+		lightningFrames = new BufferedImage[8];
+		for (int i = 0; i < 8; i++)
+			lightningFrames[i] = sheet.getSubimage(i * 64, 0, 64, 160);
+	}
+
+	private void checkLightningCast() {
+	    if (!player.isCastingLightning()) return;
+
+	    float strikeX;
+	    if (player.flipW == 1) // facing right
+	        strikeX = player.getHitbox().x + player.getLightningBox().width / 2;
+	    else // facing left
+	        strikeX = player.getHitbox().x - player.getLightningBox().width / 2;
+
+	    float strikeY = player.getHitbox().y;
+	    lightningStrikes.add(new LightningStrike(strikeX, strikeY, lightningFrames, player.flipW));
+	}
+
+	private void updateLightning() {
+		for (LightningStrike ls : lightningStrikes) {
+			if (!ls.isActive())
+				continue;
+			ls.update();
+			if (ls.shouldDealDamage()) {
+				enemyManager.checkEnemyHit(player.getLightningBox(), 10);
+				ls.setDamageDealt();
+			}
+		}
+		lightningStrikes.removeIf(ls -> !ls.isActive());
+	}
+
+	private void drawLightning(Graphics g) {
+		for (LightningStrike ls : lightningStrikes)
+			ls.draw(g, xLvlOffset, yLvlOffset);
 	}
 
 	private void calcLvlOffset() {
@@ -108,14 +149,14 @@ public class Playing extends State implements Statemethods {
 		enemyManager = new EnemyManager(this);
 		objectManager = new ObjectManager(this);
 
-//		player = new Player(200, 200, (int) (288 * Game.SCALE), (int) (288 * Game.SCALE), this);
-//		player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
 		Point spawn = levelManager.getCurrentLevel().getPlayerSpawn();
 		player = new Player(spawn.x, spawn.y, (int) (288 * Game.SCALE), (int) (288 * Game.SCALE), this);
 		player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
 		pauseOverlay = new PauseOverlay(this);
 		gameOverOverlay = new GameOverOverlay(this);
 		levelCompletedOverlay = new LevelCompletedOverlay(this);
+
+		loadLightningFrames();
 	}
 
 	@Override
@@ -135,6 +176,8 @@ public class Playing extends State implements Statemethods {
 			enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
 			checkCloseToBorder();
 			checkGates(); // CHECK GATES
+			checkLightningCast();
+			updateLightning();
 		}
 	}
 
@@ -220,19 +263,6 @@ public class Playing extends State implements Statemethods {
 
 	// PLAYER VIEW
 	private void checkCloseToBorder() {
-//		int playerX = (int) player.getHitbox().x;
-//		int diff = playerX - xLvlOffset;
-//
-//		if (diff > rightBorder)
-//			xLvlOffset += diff - rightBorder;
-//		else if (diff < leftBorder)
-//			xLvlOffset += diff - leftBorder;
-//
-//		if (xLvlOffset > maxLvlOffsetX)
-//			xLvlOffset = maxLvlOffsetX;
-//		else if (xLvlOffset < 0)
-//			xLvlOffset = 0;
-
 		int playerX = (int) player.getHitbox().x;
 		int diffX = playerX - xLvlOffset;
 		if (diffX > rightBorder)
@@ -264,6 +294,7 @@ public class Playing extends State implements Statemethods {
 		drawGateEffects(g); // ADD THIS
 		player.render(g, xLvlOffset, yLvlOffset);
 		enemyManager.draw(g, xLvlOffset, yLvlOffset);
+		drawLightning(g);
 		objectManager.draw(g, xLvlOffset, yLvlOffset);
 
 		if (paused) {
@@ -286,53 +317,52 @@ public class Playing extends State implements Statemethods {
 
 		ArrayList<Gate> gates = levelManager.getCurrentLevel().getGates();
 		for (Gate gate : gates) {
-		    Point glowPoint = gate.trigger != null ? gate.trigger : gate.spawn;
-		    if (glowPoint == null) continue;
+			Point glowPoint = gate.trigger != null ? gate.trigger : gate.spawn;
+			if (glowPoint == null)
+				continue;
 
-		    int centerX = (int) ((glowPoint.x - xLvlOffset) + Game.TILES_SIZE / 2f + gate.glowOffsetX);
-		    int centerY = (int) ((glowPoint.y - yLvlOffset) + Game.TILES_SIZE / 2f + gate.glowOffsetY);
+			int centerX = (int) ((glowPoint.x - xLvlOffset) + Game.TILES_SIZE / 2f + gate.glowOffsetX);
+			int centerY = (int) ((glowPoint.y - yLvlOffset) + Game.TILES_SIZE / 2f + gate.glowOffsetY);
 
-		    if (centerX < -Game.TILES_SIZE * 5 || centerX > Game.GAME_WIDTH + Game.TILES_SIZE * 5) continue;
-		    if (centerY < -Game.TILES_SIZE * 5 || centerY > Game.GAME_HEIGHT + Game.TILES_SIZE * 5) continue;
+			if (centerX < -Game.TILES_SIZE * 5 || centerX > Game.GAME_WIDTH + Game.TILES_SIZE * 5)
+				continue;
+			if (centerY < -Game.TILES_SIZE * 5 || centerY > Game.GAME_HEIGHT + Game.TILES_SIZE * 5)
+				continue;
 
-		    float alpha = 0.3f + (0.4f * glowPulse);
-		    Color glowColor = new Color(255, 255, 255, (int) (alpha * 255));
-		    Color transparent = new Color(255, 255, 255, 0);
+			float alpha = 0.3f + (0.4f * glowPulse);
+			Color glowColor = new Color(255, 255, 255, (int) (alpha * 255));
+			Color transparent = new Color(255, 255, 255, 0);
 
-		    float glowW = gate.glowW;
-		    float glowH = gate.glowH;
+			float glowW = gate.glowW;
+			float glowH = gate.glowH;
 
-		    // Apply rotation
-		    g2d.rotate(Math.toRadians(gate.glowRotation), centerX, centerY);
+			// Apply rotation
+			g2d.rotate(Math.toRadians(gate.glowRotation), centerX, centerY);
 
-		    if (gate.vertical) {
-		        GradientPaint leftFade = new GradientPaint(centerX, centerY, glowColor, centerX - glowW, centerY, transparent);
-		        g2d.setPaint(leftFade);
-		        g2d.fillRect((int)(centerX - glowW), (int)(centerY - glowH / 2), (int)glowW, (int)glowH);
+			if (gate.vertical) {
+				GradientPaint leftFade = new GradientPaint(centerX, centerY, glowColor, centerX - glowW, centerY,
+						transparent);
+				g2d.setPaint(leftFade);
+				g2d.fillRect((int) (centerX - glowW), (int) (centerY - glowH / 2), (int) glowW, (int) glowH);
 
-		        GradientPaint rightFade = new GradientPaint(centerX, centerY, glowColor, centerX + glowW, centerY, transparent);
-		        g2d.setPaint(rightFade);
-		        g2d.fillRect(centerX, (int)(centerY - glowH / 2), (int)glowW, (int)glowH);
-		    } else {
-		        GradientPaint upFade = new GradientPaint(centerX, centerY, glowColor, centerX, centerY - glowH, transparent);
-		        g2d.setPaint(upFade);
-		        g2d.fillRect((int)(centerX - glowW / 2), (int)(centerY - glowH), (int)glowW, (int)glowH);
-		    }
+				GradientPaint rightFade = new GradientPaint(centerX, centerY, glowColor, centerX + glowW, centerY,
+						transparent);
+				g2d.setPaint(rightFade);
+				g2d.fillRect(centerX, (int) (centerY - glowH / 2), (int) glowW, (int) glowH);
+			} else {
+				GradientPaint upFade = new GradientPaint(centerX, centerY, glowColor, centerX, centerY - glowH,
+						transparent);
+				g2d.setPaint(upFade);
+				g2d.fillRect((int) (centerX - glowW / 2), (int) (centerY - glowH), (int) glowW, (int) glowH);
+			}
 
-		    // Reset rotation after each gate
-		    g2d.rotate(-Math.toRadians(gate.glowRotation), centerX, centerY);
+			// Reset rotation after each gate
+			g2d.rotate(-Math.toRadians(gate.glowRotation), centerX, centerY);
 		}
 
 		g2d.setPaint(null);
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 	}
-
-//	private void drawPillars(Graphics g) {
-//
-//		for (int i = 0; i < 3; i++)
-//			g.drawImage(pillars, 0 + i * PILLARS_WIDTH, (int) (204 * Game.SCALE), PILLARS_WIDTH, PILLARS_HEIGHT, null);
-//	}
-
 	public void resetAll() {
 		// TODO: reset playing, enemy, lvl, etc.
 		gameOver = false;
@@ -431,6 +461,9 @@ public class Playing extends State implements Statemethods {
 				break;
 			case KeyEvent.VK_K:
 				player.setAttacking(true);
+				break;
+			case KeyEvent.VK_L:
+				player.castLightning();
 				break;
 			case KeyEvent.VK_SPACE:
 				player.setJump(true);

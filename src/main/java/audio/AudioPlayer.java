@@ -18,6 +18,7 @@ public class AudioPlayer {
 	public static int IN_GAME = 1;
 
 	public static int ATTACK = 0;
+	public static int LIGHTNING_ATTACK = 1;
 
 	private Clip[] songs, effects;
 	private int currentSongId;
@@ -39,7 +40,7 @@ public class AudioPlayer {
 	}
 
 	private void loadEffects() {
-		String[] effectNames = { "attack" };
+		String[] effectNames = { "attack", "lightning_strike" };
 		effects = new Clip[effectNames.length];
 		for (int i = 0; i < effects.length; i++)
 			effects[i] = getClip(effectNames[i]);
@@ -82,8 +83,11 @@ public class AudioPlayer {
 	}
 	
 	public void playAttackSound() {
-		int start = 0;
-		playEffect(start);
+		playEffect(ATTACK);
+	}
+	
+	public void playLightningSound() {
+		playEffect(LIGHTNING_ATTACK);
 	}
 
 	public void playEffect(int effect) {

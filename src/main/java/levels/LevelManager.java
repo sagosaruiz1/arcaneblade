@@ -57,12 +57,6 @@ public class LevelManager {
 		game.getPlaying().getObjectManager().loadObjects(prevLevel);
 	}
 
-//	private void buildAllLevels() {
-//		BufferedImage[] allLevels = LoadSave.GetAllLevels();
-//		for (BufferedImage img : allLevels)
-//			levels.add(new Level(img));
-//	}
-
 	// NEW EXPERIMENT
 	private void buildAllLevels() {
 		BufferedImage[] allLevels = LoadSave.GetAllLevels();
@@ -72,31 +66,10 @@ public class LevelManager {
 		setupGates();
 	}
 
-	// NEW EXPERIMENT
-//	private void setupGates() {
-//	    // --- ZONE 1 ---
-//	    levels.get(0).addGate(new Gate(1,
-//	        new Point(47 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
-//	        null, false));
-//
-//	    levels.get(0).addGate(new Gate(2,
-//	        new Point(99 * Game.TILES_SIZE, (13 * Game.TILES_SIZE)),
-//	        new Point(98 * Game.TILES_SIZE, 13 * Game.TILES_SIZE)));
-//
-//	    // --- ZONE 2 ---
-//	    levels.get(1).addGate(new Gate(1,
-//	        null,
-//	        new Point(45 * Game.TILES_SIZE, 0 * Game.TILES_SIZE)));
-//
-//	    levels.get(1).addGate(new Gate(2,
-//	        new Point(75 * Game.TILES_SIZE, 3 * Game.TILES_SIZE),
-//	        new Point(76 * Game.TILES_SIZE, 3 * Game.TILES_SIZE)));
-//
-//	    // Gate C will be added later
-//	}
 
+	// GATES TO ANOTHER ZONES
 	private void setupGates() {
-// Gate A Zone 1 - horizontal, no rotation
+		// Gate A Zone 1 - horizontal, no rotation
 		levels.get(0).addGate(new Gate(1, new Point(47 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
 						null,
 						false,
@@ -105,7 +78,7 @@ public class LevelManager {
 						Game.TILES_SIZE * 3f,
 						0f)); // rotation in degrees
 
-// Gate B Zone 1 - vertical, no rotation
+		// Gate B Zone 1 - vertical, no rotation
 		levels.get(0).addGate(new Gate(2, new Point(99 * Game.TILES_SIZE, 13 * Game.TILES_SIZE),
 						new Point(96 * Game.TILES_SIZE, 13 * Game.TILES_SIZE),
 						true,
@@ -114,7 +87,7 @@ public class LevelManager {
 						Game.TILES_SIZE * 8.1f,
 						0f)); // rotation in degrees
 
-// Gate A Zone 2 - rotated 90 degrees
+		// Gate A Zone 2 - rotated 90 degrees
 		levels.get(1).addGate(new Gate(1, null,
 						new Point(45 * Game.TILES_SIZE, 0 * Game.TILES_SIZE),
 						false,
@@ -123,7 +96,7 @@ public class LevelManager {
 						Game.TILES_SIZE * 10f,
 						180f)); // rotation in degrees
 
-// Gate B Zone 2
+		// Gate B Zone 2
 		levels.get(1).addGate(new Gate(2, new Point(75 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
 						new Point(72 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
 						true,

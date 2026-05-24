@@ -10,6 +10,7 @@ import io.arcaneblade.Game;
 import levels.Level;
 import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.*;
+import static utilz.Constants.LightningConstants.*;
 
 public class EnemyManager {
 
@@ -32,10 +33,8 @@ public class EnemyManager {
 		for (NightBorne nb : mobs)
 			if (nb.isActive()) {
 				nb.update(lvlData, player);
-//				isAnyActive = true;
+
 			}
-//		if(!isAnyActive)
-//			playing.setLevelCompleted(true);
 	}
 
 	public void draw(Graphics g, int xLvlOffset, int yLvlOffset) {
@@ -45,33 +44,25 @@ public class EnemyManager {
 	private void drawMobs(Graphics g, int xLvlOffset, int yLvlOffset) {
 		for (NightBorne nb : mobs)
 			if (nb.isActive()) {
-//				int yOffset = (int) (NIGHTBORNE_HEIGHT - Game.TILES_SIZE * 2);
-//				
-//				int extraX = 10;
-//				int extraY = 10;
-//				
-//				
-//				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
-//						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() + extraX,
-//						(int) (nb.getHitbox().y - yOffset) - extraY - yLvlOffset,
-//						NIGHTBORNE_WIDTH * nb.flipW(),
-//						NIGHTBORNE_HEIGHT, null);
-				
 				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
-					    (int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() - NB_DRAWOFFSET_X,
-					    (int) (nb.getHitbox().y) - yLvlOffset - NB_DRAWOFFSET_Y,
-					    NIGHTBORNE_WIDTH * nb.flipW(), NIGHTBORNE_HEIGHT, null);
+						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() - NB_DRAWOFFSET_X,
+						(int) (nb.getHitbox().y) - yLvlOffset - NB_DRAWOFFSET_Y, NIGHTBORNE_WIDTH * nb.flipW(),
+						NIGHTBORNE_HEIGHT, null);
 				nb.drawAttackBox(g, xLvlOffset, yLvlOffset);
 			}
 	}
-
+	
 	public void checkEnemyHit(Rectangle2D.Float attackBox) {
-		for (NightBorne nb : mobs)
-			if (nb.isActive())
-				if (attackBox.intersects(nb.getHitbox())) {
-					nb.hurt(10);
-					return;
-				}
+	    checkEnemyHit(attackBox, 10);
+	}
+
+	public void checkEnemyHit(Rectangle2D.Float attackBox, int damage) {
+	    for (NightBorne nb : mobs)
+	        if (nb.isActive())
+	            if (attackBox.intersects(nb.getHitbox())) {
+	                nb.hurt(damage);
+	                return;
+	            }
 	}
 
 	private void loadEnemyImgs() {
@@ -83,7 +74,34 @@ public class EnemyManager {
 						NIGHTBORNE_WIDTH_DEFAULT, NIGHTBORNE_HEIGHT_DEFAULT);
 
 	}
+
+	public NightBorne getClosestEnemy(float playerX, float playerY) {
+		NightBorne closest = null;
+		float closestDist = LIGHTNING_RANGE;
+		
+		for (NightBorne nb : mobs) {
+			if(!nb.isActive())
+				continue;
+			float dist = (float)(Math.abs(nb.getHitbox().x - playerX));
+			if(dist < closestDist) {
+				closestDist = dist;
+				closest = nb;
+			}
+		}
+		return closest;
+	}
 	
+	public void applyLightningDamage(float x, float y, int damage) {
+		for (NightBorne nb : mobs) {
+			if(!nb.isActive())
+				continue;
+			if(Math.abs(nb.getHitbox().x - x) < Game.TILES_SIZE &&
+				Math.abs(nb.getHitbox().y - y) < Game.TILES_SIZE * 2) {
+				nb.hurt(damage);
+			}
+		}
+	}
+
 	public void resetAllEnemies() {
 		for (NightBorne nb : mobs)
 			nb.resetEnemy();

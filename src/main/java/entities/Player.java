@@ -32,6 +32,11 @@ public class Player extends Entity {
 	private float playerSpeed = 2.0f;
 	private int[][] lvlData;
 
+	// Lightning skill
+	private boolean castLightning = false;
+	private int lightningCooldown = 0;
+	private int lightningCooldownMax = 180;
+
 	// Hitbox
 	private float xDrawOffset = 130 * Game.SCALE;
 	private float yDrawOffset = 128 * Game.SCALE;
@@ -55,7 +60,7 @@ public class Player extends Entity {
 	private float dashDistance = 250f * Game.SCALE;
 	private float dashProgress = 20f;
 	private float dashSpeed = 0.015f;
-	private int dashCooldown = 0;
+	private int dashCooldown = 3;
 	private int dashCooldownMax = 40;
 
 	// Wall slide
@@ -81,15 +86,28 @@ public class Player extends Entity {
 	private int healthBarXStart = (int) (34 * Game.SCALE);
 	private int healthBarYStart = (int) (14 * Game.SCALE);
 
+	private int maxPower = 100;
+	private int currentPower = maxPower;
+	private int lightningManaCost = 10;
+
+	// MANA BAR UI
+	private int powerBarWidth = (int) (105 * Game.SCALE);
+	private int powerBarHeight = (int) (3.4f * Game.SCALE);
+	private int powerBarXStart = (int) (45 * Game.SCALE);
+	private int powerBarYStart = (int) (33 * Game.SCALE);
+	private int powerWidth = powerBarWidth;
+	Color powerColor = new Color(50, 254, 227);
+
 //	private int maxHealth = 100;
 //	private int currentHealth = maxHealth;
 	private int healthWidth = healthBarWidth;
 
 	// ATTACK BOX
-	private Rectangle2D.Float attackBox;
+	private Rectangle2D.Float attackBox, lightningBox;
+	
 
 	private int flipX = 0;
-	private int flipW = 1;
+	public int flipW = 1;
 
 	private boolean attackChecked;
 
@@ -106,20 +124,55 @@ public class Player extends Entity {
 		initHitbox(x, y, 26 * Game.SCALE, 30 * Game.SCALE);
 		initAttackBox();
 	}
-	
+
 	public void setSpawn(Point spawn) {
-	    this.x = spawn.x;
-	    this.y = spawn.y;
-	    hitbox.x = spawn.x;
-	    hitbox.y = spawn.y;
+		this.x = spawn.x;
+		this.y = spawn.y;
+		hitbox.x = spawn.x;
+		hitbox.y = spawn.y;
+	}
+
+	// lightning skill
+	public void castLightning() {
+		if (lightningCooldown > 0)
+			return;
+		if (currentPower < lightningManaCost) {
+			System.out.println("Not enough mana!");
+			return;
+		}
+		castLightning = true;
+		currentPower -= lightningManaCost;
+		playing.getGame().getAudioPlayer().playLightningSound();
+	}
+
+	public boolean isCastingLightning() {
+		if (castLightning) {
+			castLightning = false;
+			lightningCooldown = lightningCooldownMax;
+			return true;
+		}
+		return false;
+	}
+	
+	private void updatePowerBar() {
+		powerWidth = (int)((currentPower / (float) maxPower) * powerBarWidth);
 	}
 
 	private void initAttackBox() {
 		attackBox = new Rectangle2D.Float(x, y, (int) (50 * Game.SCALE), (int) (20 * Game.SCALE));
+		
+		lightningBox = new Rectangle2D.Float(x, y, 
+			    (int)(8 * Game.TILES_SIZE), // adjust width
+			    (int)(2 * Game.TILES_SIZE)); // adjust height
 	}
 
 	public void update() {
 		updateHealthBar();
+		updatePowerBar();
+
+		if (lightningCooldown > 0)
+			lightningCooldown--;
+
 		if (currentHealth <= 0) {
 			if (playerAction != DEATH) {
 				playerAction = DEATH;
@@ -162,13 +215,19 @@ public class Player extends Entity {
 	}
 
 	private void updateAttackBox() {
-		if (right) {
-			attackBox.x = hitbox.x + hitbox.width + (int) (Game.SCALE * 5);
-		} else if (left) {
-			attackBox.x = hitbox.x - hitbox.width - (int) (Game.SCALE * 25);
-		} else {
-		}
-		attackBox.y = hitbox.y + (Game.SCALE * 10);
+	    if (right) {
+	        attackBox.x = hitbox.x + hitbox.width + (int) (Game.SCALE * 5);
+	    } else if (left) {
+	        attackBox.x = hitbox.x - hitbox.width - (int) (Game.SCALE * 25);
+	    }
+	    attackBox.y = hitbox.y + (Game.SCALE * 10);
+
+	    // lightning box
+	    if (flipW == 1)
+	        lightningBox.x = hitbox.x;
+	    else
+	        lightningBox.x = hitbox.x - (8 * Game.TILES_SIZE);
+	    lightningBox.y = hitbox.y - Game.TILES_SIZE;
 	}
 
 	private void updateHealthBar() {
@@ -177,11 +236,9 @@ public class Player extends Entity {
 
 	public void render(Graphics g, int xLvlOffset, int yLvlOffset) {
 
-		g.drawImage(animations[playerAction][aniIndex],
-				(int) (hitbox.x - xDrawOffset) - xLvlOffset + flipX,
-				(int) (hitbox.y - yDrawOffset) - yLvlOffset,
-				width * flipW, height, null);
-		
+		g.drawImage(animations[playerAction][aniIndex], (int) (hitbox.x - xDrawOffset) - xLvlOffset + flipX,
+				(int) (hitbox.y - yDrawOffset) - yLvlOffset, width * flipW, height, null);
+
 //		drawHitbox(g, lvlOffset);
 //		drawAttackBox(g, lvlOffset);
 		drawUI(g);
@@ -194,8 +251,14 @@ public class Player extends Entity {
 
 	private void drawUI(Graphics g) {
 		g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+		
+		// Health bar
 		g.setColor(healthColor);
 		g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+		
+		// Power bar
+		g.setColor(powerColor);
+		g.fillRect(powerBarXStart + statusBarX, powerBarYStart + statusBarY, powerWidth, powerBarHeight);
 	}
 
 	private void updateAnimationTick() {
@@ -250,8 +313,8 @@ public class Player extends Entity {
 			else
 				playerAction = FALLING;
 		}
-		
-		if(dashing)
+
+		if (dashing)
 			playerAction = DASHING;
 
 		if (attacking) {
@@ -276,7 +339,7 @@ public class Player extends Entity {
 	private void updatePos() {
 
 		moving = false;
-		
+
 		// Dash cooldown tick
 		if (dashCooldown > 0)
 			dashCooldown--;
@@ -284,19 +347,19 @@ public class Player extends Entity {
 		// Handle dash movement
 		if (dashing) {
 			dashProgress += dashSpeed;
-			
+
 			float t = dashProgress;
 			float easeOut = t * t * (3f - 2f * t);
 			easeOut = 1f - easeOut; // invert so it goes fast-to-slow
 			float frameMove = dashDistance * dashSpeed * easeOut;
-			
+
 			float dSpeed = (flipW == 1) ? frameMove : -frameMove;
-			
-			if(CanMoveHere(hitbox.x + dSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData))
+
+			if (CanMoveHere(hitbox.x + dSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData))
 				hitbox.x += dSpeed;
 			else
 				dashing = false;
-			if(dashProgress >= 1f)
+			if (dashProgress >= 1f)
 				dashing = false;
 			moving = true;
 //			return;
@@ -320,7 +383,7 @@ public class Player extends Entity {
 			else if (currentSpeedX < 0)
 				currentSpeedX = Math.min(0, currentSpeedX + deceleration);
 		}
-		
+
 		// Coyote time
 		if (!inAir) {
 			if (!isEntityOnFloor(hitbox, lvlData)) {
@@ -331,38 +394,38 @@ public class Player extends Entity {
 				coyoteTimer = 0;
 			}
 		}
-		
+
 		// Wall detection
-		if(inAir) {
+		if (inAir) {
 			boolean hitWallRight = !CanMoveHere(hitbox.x + playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
 			boolean hitWallLeft = !CanMoveHere(hitbox.x + playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
 			onWall = (right && hitWallRight) || (left && hitWallLeft);
 		} else {
 			onWall = false;
 		}
-		
+
 		// Variable jump hold
-		if(jumpHeld) {
-			if(jump && jumpHeldTicks < maxJumpHoldTicks) {
+		if (jumpHeld) {
+			if (jump && jumpHeldTicks < maxJumpHoldTicks) {
 				airSpeed -= 0.08f * Game.SCALE;
 				jumpHeldTicks++;
 			} else {
 				jumpHeld = false;
 			}
 		}
-		
+
 		// Wall slide - slow fall when pressing into wall
-		if(inAir) {
-			if(onWall && airSpeed > 0)
+		if (inAir) {
+			if (onWall && airSpeed > 0)
 				airSpeed = wallSlideSpeed;
-			
+
 			if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
 				hitbox.y += airSpeed;
 				airSpeed += GRAVITY;
 				updateXPos(currentSpeedX);
 			} else {
 				hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
-				if(airSpeed > 0)
+				if (airSpeed > 0)
 					resetInAir();
 				else
 					airSpeed = fallSpeedAfterCollision;
@@ -371,7 +434,7 @@ public class Player extends Entity {
 		} else {
 			updateXPos(currentSpeedX);
 		}
-		if(currentSpeedX != 0)
+		if (currentSpeedX != 0)
 			moving = true;
 
 // -----OLD CODE-----
@@ -488,7 +551,11 @@ public class Player extends Entity {
 	}
 
 	public void changePower(int value) {
-		System.out.println("Added energy!");
+		currentPower += value;
+		if (currentPower <= 0)
+			currentPower = 0;
+		else if (currentPower >= maxPower)
+			currentPower = maxPower;
 	}
 
 	private void loadAnimations() {
@@ -545,6 +612,10 @@ public class Player extends Entity {
 		}
 	}
 
+	public Rectangle2D.Float getLightningBox() {
+	    return lightningBox;
+	}
+	
 	public boolean isLeft() {
 		return left;
 	}

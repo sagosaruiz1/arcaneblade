@@ -14,7 +14,7 @@ public class Constants {
 		public static final int BOX = 3;
 
 		public static final int HEALTH_POTION_VALUE = 15;
-		public static final int ENERGY_POTION_VALUE = 10;
+		public static final int ENERGY_POTION_VALUE = 30;
 
 		public static final int CONTAINER_WIDTH_DEFAULT = 40;
 		public static final int CONTAINER_HEIGHT_DEFAULT = 30;
@@ -35,6 +35,15 @@ public class Constants {
 			}
 			return 1;
 		}
+	}
+	
+	public static class LightningConstants {
+		public static final int LIGHTNING_WIDTH_DEFAULT = 64;
+		public static final int LIGHTNING_HEIGHT_DEFAULT = 160;
+		public static final int LIGHTNING_FRAMES = 8;
+		public static final int LIGHTNING_RANGE = 8 * Game.TILES_SIZE;
+		public static final int LIGHTNING_DAMAGE = 10;
+		public static final int LIGHTNING_COOLDOWN = 180;
 	}
 
 	public static class EnemyConstants {
