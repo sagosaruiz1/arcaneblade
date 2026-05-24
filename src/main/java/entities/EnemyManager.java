@@ -32,10 +32,10 @@ public class EnemyManager {
 		for (NightBorne nb : mobs)
 			if (nb.isActive()) {
 				nb.update(lvlData, player);
-				isAnyActive = true;
+//				isAnyActive = true;
 			}
-		if(!isAnyActive)
-			playing.setLevelCompleted(true);
+//		if(!isAnyActive)
+//			playing.setLevelCompleted(true);
 	}
 
 	public void draw(Graphics g, int xLvlOffset, int yLvlOffset) {
@@ -59,7 +59,7 @@ public class EnemyManager {
 				
 				g.drawImage(nbArr[nb.getEnemyState()][nb.getAniIndex()],
 					    (int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() - NB_DRAWOFFSET_X,
-					    (int) (nb.getHitbox().y) - NB_DRAWOFFSET_Y,
+					    (int) (nb.getHitbox().y) - yLvlOffset - NB_DRAWOFFSET_Y,
 					    NIGHTBORNE_WIDTH * nb.flipW(), NIGHTBORNE_HEIGHT, null);
 				nb.drawAttackBox(g, xLvlOffset, yLvlOffset);
 			}

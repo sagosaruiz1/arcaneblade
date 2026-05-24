@@ -1,11 +1,13 @@
 package levels;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import gamestates.Gamestate;
 import io.arcaneblade.Game;
+import utilz.Gate;
 import utilz.LoadSave;
 
 public class LevelManager {
@@ -39,10 +41,96 @@ public class LevelManager {
 
 	}
 
+	public void loadPreviousLevel() {
+		lvlIndex--;
+		if (lvlIndex < 0) {
+			lvlIndex = 0;
+			System.out.println("Already at first zone!");
+			return;
+		}
+
+		Level prevLevel = levels.get(lvlIndex);
+		game.getPlaying().getEnemyManager().loadEnemies(prevLevel);
+		game.getPlaying().getPlayer().loadLvlData(prevLevel.getLevelData());
+		game.getPlaying().setMaxLvlOffset(prevLevel.getLvlOffset());
+		game.getPlaying().setMaxLvlOffsetY(prevLevel.getLvlOffsetY());
+		game.getPlaying().getObjectManager().loadObjects(prevLevel);
+	}
+
+//	private void buildAllLevels() {
+//		BufferedImage[] allLevels = LoadSave.GetAllLevels();
+//		for (BufferedImage img : allLevels)
+//			levels.add(new Level(img));
+//	}
+
+	// NEW EXPERIMENT
 	private void buildAllLevels() {
 		BufferedImage[] allLevels = LoadSave.GetAllLevels();
 		for (BufferedImage img : allLevels)
 			levels.add(new Level(img));
+
+		setupGates();
+	}
+
+	// NEW EXPERIMENT
+//	private void setupGates() {
+//	    // --- ZONE 1 ---
+//	    levels.get(0).addGate(new Gate(1,
+//	        new Point(47 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
+//	        null, false));
+//
+//	    levels.get(0).addGate(new Gate(2,
+//	        new Point(99 * Game.TILES_SIZE, (13 * Game.TILES_SIZE)),
+//	        new Point(98 * Game.TILES_SIZE, 13 * Game.TILES_SIZE)));
+//
+//	    // --- ZONE 2 ---
+//	    levels.get(1).addGate(new Gate(1,
+//	        null,
+//	        new Point(45 * Game.TILES_SIZE, 0 * Game.TILES_SIZE)));
+//
+//	    levels.get(1).addGate(new Gate(2,
+//	        new Point(75 * Game.TILES_SIZE, 3 * Game.TILES_SIZE),
+//	        new Point(76 * Game.TILES_SIZE, 3 * Game.TILES_SIZE)));
+//
+//	    // Gate C will be added later
+//	}
+
+	private void setupGates() {
+// Gate A Zone 1 - horizontal, no rotation
+		levels.get(0).addGate(new Gate(1, new Point(47 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
+						null,
+						false,
+						0f, 50f,
+						Game.TILES_SIZE * 7.2f,
+						Game.TILES_SIZE * 3f,
+						0f)); // rotation in degrees
+
+// Gate B Zone 1 - vertical, no rotation
+		levels.get(0).addGate(new Gate(2, new Point(99 * Game.TILES_SIZE, 13 * Game.TILES_SIZE),
+						new Point(96 * Game.TILES_SIZE, 13 * Game.TILES_SIZE),
+						true,
+						0f, -165f,
+						Game.TILES_SIZE * 3.5f,
+						Game.TILES_SIZE * 8.1f,
+						0f)); // rotation in degrees
+
+// Gate A Zone 2 - rotated 90 degrees
+		levels.get(1).addGate(new Gate(1, null,
+						new Point(45 * Game.TILES_SIZE, 0 * Game.TILES_SIZE),
+						false,
+						24f, -30f,
+						Game.TILES_SIZE * 6.1f,
+						Game.TILES_SIZE * 10f,
+						180f)); // rotation in degrees
+
+// Gate B Zone 2
+		levels.get(1).addGate(new Gate(2, new Point(75 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
+						new Point(72 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
+						true,
+						0f, -70f,
+						Game.TILES_SIZE * 2f,
+						Game.TILES_SIZE * 4.1f,
+						0f)); // rotation in degrees
 	}
 
 	private void importOutsideSprites() {
@@ -70,9 +158,7 @@ public class LevelManager {
 				int index = levels.get(lvlIndex).getSpriteIndex(i, j);
 				if (index < 0 || index >= levelSprite.length)
 					continue;
-				g.drawImage(levelSprite[index],
-						Game.TILES_SIZE * i - xLvlOffset,
-						Game.TILES_SIZE * j - yLvlOffset,
+				g.drawImage(levelSprite[index], Game.TILES_SIZE * i - xLvlOffset, Game.TILES_SIZE * j - yLvlOffset,
 						Game.TILES_SIZE, Game.TILES_SIZE, null);
 			}
 	}

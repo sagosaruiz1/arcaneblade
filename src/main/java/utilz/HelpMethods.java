@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.awt.Point;
 
 import entities.NightBorne;
 import io.arcaneblade.Game;
@@ -24,6 +25,23 @@ public class HelpMethods {
 					if (!IsSolid(x, y + height, lvlData))
 						return true;
 		return false;
+	}
+	
+	
+	// Player Spawn point
+	public static Point GetPlayerSpawn(BufferedImage img) {
+	    for (int j = 0; j < img.getHeight(); j++)
+	        for (int i = 0; i < img.getWidth(); i++) {
+	            Color color = new Color(img.getRGB(i, j));
+	            // Player spawn = R=0, G=255, B=255 (cyan pixel)
+	            if (color.getRed() == 11 &&
+	                color.getGreen() == 255 &&
+	                color.getBlue() == 255)
+	                return new Point(i * Game.TILES_SIZE, j * Game.TILES_SIZE);
+	        }
+	    // Default spawn if no marker found
+	    System.out.println("No player spawn found! Using default.");
+	    return new Point(200, 200);
 	}
 
 	private static boolean IsSolid(float x, float y, int[][] lvlData) {
@@ -140,6 +158,7 @@ public class HelpMethods {
 		return list;
 	}
 	
+	
 	public static ArrayList<Potion> GetPotions(BufferedImage img) {
 		ArrayList<Potion> list = new ArrayList<>();
 		for (int j = 0; j < img.getHeight(); j++)
@@ -163,4 +182,5 @@ public class HelpMethods {
 			}
 		return list;
 	}
+
 }

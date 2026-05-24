@@ -1,12 +1,15 @@
 package levels;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import entities.NightBorne;
 import io.arcaneblade.Game;
 import objects.GameContainer;
 import objects.Potion;
+import utilz.Gate;
 import utilz.HelpMethods;
 import utilz.LoadSave;
 import static utilz.HelpMethods.GetLevelData;
@@ -19,6 +22,9 @@ public class Level {
 	private ArrayList<NightBorne> mobs;
 	private ArrayList<Potion> potions;
 	private ArrayList<GameContainer> containers;
+	private ArrayList<Gate> gates= new ArrayList<>();
+	
+	private Point playerSpawn;
 	
 	private int lvlTilesWide;
 	private int lvlTilesTall;
@@ -34,6 +40,11 @@ public class Level {
 		createPotions();
 		createContainers();
 		calcLvlOffsets();
+		createPlayerSpawn(); // NEW
+	}
+	
+	public void addGate(Gate gate) {
+		gates.add(gate);
 	}
 
 	private void createContainers() {
@@ -59,6 +70,16 @@ public class Level {
 
 	private void createLevelData() {
 		lvlData = GetLevelData(img);
+	}
+	
+	// NEW
+	private void createPlayerSpawn() {
+	    playerSpawn = HelpMethods.GetPlayerSpawn(img);
+	}
+	
+	// NEW
+	public Point getPlayerSpawn() {
+	    return playerSpawn;
 	}
 
 	public int getSpriteIndex(int x, int y) {
@@ -87,5 +108,9 @@ public class Level {
 	
 	public ArrayList<GameContainer> getContainers() {
 		return containers;
+	}
+	
+	public ArrayList<Gate> getGates() {
+		return gates;
 	}
 }
