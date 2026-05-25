@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import entities.Player;
 import gamestates.Playing;
 import levels.Level;
 import utilz.LoadSave;
@@ -15,13 +16,22 @@ public class ObjectManager {
 
 	private Playing playing;
 	private BufferedImage[][] potionImgs, containerImgs;
+	private BufferedImage spikeImg;
 	private ArrayList<Potion> potions;
 	private ArrayList<GameContainer> containers;
+	private ArrayList<Spike> spikes;
 
 	public ObjectManager(Playing playing) {
 		this.playing = playing;
 		loadImgs();
 
+	}
+	
+	public void checkSpikesTouched(Player p) {
+		for(Spike s : spikes)
+			if(s.getHitbox().intersects(p.getHitbox()))
+				p.kill();
+				
 	}
 
 	public void checkObjectTouched(Rectangle2D.Float hitbox) {
@@ -60,6 +70,7 @@ public class ObjectManager {
 	public void loadObjects(Level newLevel) {
 		potions = newLevel.getPotions();
 		containers = newLevel.getContainers();
+		spikes = newLevel.getSpikes();
 	}
 
 	private void loadImgs() {
@@ -76,6 +87,8 @@ public class ObjectManager {
 		for (int j = 0; j < containerImgs.length; j++)
 			for (int i = 0; i < containerImgs[j].length; i++)
 				containerImgs[j][i] = containerSprite.getSubimage(40 * i, 30 * j, 40, 30);
+
+		spikeImg = LoadSave.GetSpriteAtlas(LoadSave.TRAP_ATLAS);
 	}
 
 	public void update() {
@@ -90,6 +103,16 @@ public class ObjectManager {
 	public void draw(Graphics g, int xLvlOffset, int yLvlOffset) {
 		drawPotions(g, xLvlOffset, yLvlOffset);
 		drawContainers(g, xLvlOffset, yLvlOffset);
+		drawTraps(g, xLvlOffset, yLvlOffset);
+	}
+
+	private void drawTraps(Graphics g, int xLvlOffset, int yLvlOffset) {
+		for (Spike s : spikes) {
+			g.drawImage(spikeImg,
+					(int) (s.getHitbox().x - xLvlOffset),
+					(int) (s.getHitbox().y - s.getyDrawOffset() - yLvlOffset),
+					SPIKE_WIDTH, SPIKE_HEIGHT, null);
+		}
 	}
 
 	private void drawContainers(Graphics g, int xLvlOffset, int yLvlOffset) {
@@ -101,8 +124,8 @@ public class ObjectManager {
 
 				g.drawImage(containerImgs[type][gc.getAniIndex()],
 						(int) (gc.getHitbox().x - gc.getxDrawOffset() - xLvlOffset),
-						(int) (gc.getHitbox().y - gc.getyDrawOffset() - yLvlOffset),
-						CONTAINER_WIDTH, CONTAINER_HEIGHT, null);
+						(int) (gc.getHitbox().y - gc.getyDrawOffset() - yLvlOffset), CONTAINER_WIDTH, CONTAINER_HEIGHT,
+						null);
 			}
 	}
 
@@ -114,8 +137,7 @@ public class ObjectManager {
 					type = 1;
 				g.drawImage(potionImgs[type][p.getAniIndex()],
 						(int) (p.getHitbox().x - p.getxDrawOffset() - xLvlOffset),
-						(int) (p.getHitbox().y - p.getyDrawOffset() - yLvlOffset),
-						POTION_WIDTH, POTION_HEIGHT, null);
+						(int) (p.getHitbox().y - p.getyDrawOffset() - yLvlOffset), POTION_WIDTH, POTION_HEIGHT, null);
 			}
 	}
 

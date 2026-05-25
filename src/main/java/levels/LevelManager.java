@@ -66,44 +66,37 @@ public class LevelManager {
 		setupGates();
 	}
 
-
 	// GATES TO ANOTHER ZONES
 	private void setupGates() {
-		// Gate A Zone 1 - horizontal, no rotation
-		levels.get(0).addGate(new Gate(1, new Point(47 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
-						null,
-						false,
-						0f, 50f,
-						Game.TILES_SIZE * 7.2f,
-						Game.TILES_SIZE * 3f,
-						0f)); // rotation in degrees
+	    // --- ZONE 1 ---
+		// Gate A
+	    levels.get(0).addGate(new Gate(1,
+	        new Point(29 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
+	        null,
+	        false));
+	    // Gate B
+	    levels.get(0).addGate(new Gate(2,
+	        new Point(99 * Game.TILES_SIZE, 27 * Game.TILES_SIZE),
+	        new Point(99 * Game.TILES_SIZE, 26 * Game.TILES_SIZE), true));
 
-		// Gate B Zone 1 - vertical, no rotation
-		levels.get(0).addGate(new Gate(2, new Point(99 * Game.TILES_SIZE, 13 * Game.TILES_SIZE),
-						new Point(96 * Game.TILES_SIZE, 13 * Game.TILES_SIZE),
-						true,
-						0f, -165f,
-						Game.TILES_SIZE * 3.5f,
-						Game.TILES_SIZE * 8.1f,
-						0f)); // rotation in degrees
+	    // --- ZONE 2 ---
+	    levels.get(1).addGate(new Gate(1,
+	        null,
+	        new Point(29 * Game.TILES_SIZE, 0 * Game.TILES_SIZE), false));
 
-		// Gate A Zone 2 - rotated 90 degrees
-		levels.get(1).addGate(new Gate(1, null,
-						new Point(45 * Game.TILES_SIZE, 0 * Game.TILES_SIZE),
-						false,
-						24f, -30f,
-						Game.TILES_SIZE * 6.1f,
-						Game.TILES_SIZE * 10f,
-						180f)); // rotation in degrees
+	    levels.get(1).addGate(new Gate(2,
+	        new Point(75 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
+	        new Point(72 * Game.TILES_SIZE, 4 * Game.TILES_SIZE), true));
+	    
+	    levels.get(1).addGate(new Gate(3,
+	    		new Point(70 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
+	    		null,
+	    		false));
 
-		// Gate B Zone 2
-		levels.get(1).addGate(new Gate(2, new Point(75 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
-						new Point(72 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
-						true,
-						0f, -70f,
-						Game.TILES_SIZE * 2f,
-						Game.TILES_SIZE * 4.1f,
-						0f)); // rotation in degrees
+	    // --- ZONE 3 ---
+	    levels.get(2).addGate(new Gate(3,
+		        new Point(69 * Game.TILES_SIZE, 0 * Game.TILES_SIZE),
+		        new Point(69 * Game.TILES_SIZE, 1 * Game.TILES_SIZE), true));
 	}
 
 	private void importOutsideSprites() {

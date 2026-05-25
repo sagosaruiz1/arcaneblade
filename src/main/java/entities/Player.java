@@ -1,6 +1,6 @@
 package entities;
 
-import static utilz.Constants.Directions.*;
+
 import static utilz.Constants.PlayerConstants.*;
 import static utilz.HelpMethods.*;
 import static utilz.Constants.*;
@@ -10,12 +10,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-
-import org.w3c.dom.css.RGBColor;
 
 import gamestates.Playing;
 import io.arcaneblade.Game;
@@ -24,10 +18,10 @@ import utilz.LoadSave;
 public class Player extends Entity {
 
 	private BufferedImage[][] animations;
-	private int aniTick, aniIndex, aniSpeed = 15;
+	private int aniTick, aniIndex;
 	private int playerAction = IDLE;
 	private boolean moving = false, attacking = false;
-	private int comboTick = 0, attackType = ATTACK_1;
+	private int attackType = ATTACK_1;
 	private boolean left, right, jump;
 	private float playerSpeed = 2.0f;
 	private int[][] lvlData;
@@ -48,7 +42,9 @@ public class Player extends Entity {
 	// Variable jump
 	private boolean jumpHeld = false;
 	private int jumpHeldTicks = 0;
+	private int jumpsLeft = 2;
 	private int maxJumpHoldTicks = 15;
+	private boolean jumpPressed = false;
 
 	// Coyote time
 	private int coyoteTimer = 0;
@@ -56,7 +52,6 @@ public class Player extends Entity {
 
 	// Dash
 	private boolean dashing = false;
-	private int dashTick = 0;
 	private float dashDistance = 250f * Game.SCALE;
 	private float dashProgress = 20f;
 	private float dashSpeed = 0.015f;
@@ -104,7 +99,6 @@ public class Player extends Entity {
 
 	// ATTACK BOX
 	private Rectangle2D.Float attackBox, lightningBox;
-	
 
 	private int flipX = 0;
 	public int flipW = 1;
@@ -153,17 +147,16 @@ public class Player extends Entity {
 		}
 		return false;
 	}
-	
+
 	private void updatePowerBar() {
-		powerWidth = (int)((currentPower / (float) maxPower) * powerBarWidth);
+		powerWidth = (int) ((currentPower / (float) maxPower) * powerBarWidth);
 	}
 
 	private void initAttackBox() {
 		attackBox = new Rectangle2D.Float(x, y, (int) (50 * Game.SCALE), (int) (20 * Game.SCALE));
-		
-		lightningBox = new Rectangle2D.Float(x, y, 
-			    (int)(8 * Game.TILES_SIZE), // adjust width
-			    (int)(2 * Game.TILES_SIZE)); // adjust height
+
+		lightningBox = new Rectangle2D.Float(x, y, (int) (8 * Game.TILES_SIZE), // adjust width
+				(int) (2 * Game.TILES_SIZE)); // adjust height
 	}
 
 	public void update() {
@@ -195,10 +188,15 @@ public class Player extends Entity {
 		updatePos();
 		if (moving)
 			checkPotionTouched();
+			checkSpikesTouched();
 		if (attacking)
 			checkAttack();
 		updateAnimationTick();
 		setAnimation();
+	}
+
+	private void checkSpikesTouched() {
+		playing.checkSpikesTouched(this);
 	}
 
 	private void checkPotionTouched() {
@@ -215,19 +213,19 @@ public class Player extends Entity {
 	}
 
 	private void updateAttackBox() {
-	    if (right) {
-	        attackBox.x = hitbox.x + hitbox.width + (int) (Game.SCALE * 5);
-	    } else if (left) {
-	        attackBox.x = hitbox.x - hitbox.width - (int) (Game.SCALE * 25);
-	    }
-	    attackBox.y = hitbox.y + (Game.SCALE * 10);
+		if (right) {
+			attackBox.x = hitbox.x + hitbox.width + (int) (Game.SCALE * 5);
+		} else if (left) {
+			attackBox.x = hitbox.x - hitbox.width - (int) (Game.SCALE * 25);
+		}
+		attackBox.y = hitbox.y + (Game.SCALE * 10);
 
-	    // lightning box
-	    if (flipW == 1)
-	        lightningBox.x = hitbox.x;
-	    else
-	        lightningBox.x = hitbox.x - (8 * Game.TILES_SIZE);
-	    lightningBox.y = hitbox.y - Game.TILES_SIZE;
+		// lightning box
+		if (flipW == 1)
+			lightningBox.x = hitbox.x;
+		else
+			lightningBox.x = hitbox.x - (8 * Game.TILES_SIZE);
+		lightningBox.y = hitbox.y - Game.TILES_SIZE;
 	}
 
 	private void updateHealthBar() {
@@ -244,18 +242,18 @@ public class Player extends Entity {
 		drawUI(g);
 	}
 
-	private void drawAttackBox(Graphics g, int lvlOffsetX) {
-		g.setColor(healthColor);
-		g.drawRect((int) attackBox.x - lvlOffsetX, (int) attackBox.y, (int) attackBox.width, (int) attackBox.height);
-	}
+//	private void drawAttackBox(Graphics g, int lvlOffsetX) {
+//		g.setColor(healthColor);
+//		g.drawRect((int) attackBox.x - lvlOffsetX, (int) attackBox.y, (int) attackBox.width, (int) attackBox.height);
+//	}
 
 	private void drawUI(Graphics g) {
 		g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
-		
+
 		// Health bar
 		g.setColor(healthColor);
 		g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
-		
+
 		// Power bar
 		g.setColor(powerColor);
 		g.fillRect(powerBarXStart + statusBarX, powerBarYStart + statusBarY, powerWidth, powerBarHeight);
@@ -316,7 +314,13 @@ public class Player extends Entity {
 
 		if (dashing)
 			playerAction = DASHING;
-
+		
+		if(playerAction == HURT) {
+			if(aniIndex >= GetSpriteAmount(HURT) - 1)
+				playerAction = IDLE;
+			return;
+		}
+		
 		if (attacking) {
 
 			if (playerAction != ATTACK_1 && playerAction != ATTACK_2) {
@@ -365,8 +369,10 @@ public class Player extends Entity {
 //			return;
 		}
 
-		if (jump)
+		if (jumpPressed) {
 			jump();
+			jumpPressed = false;
+		}
 
 		// Acceleration / deceleration
 		if (left) {
@@ -398,7 +404,7 @@ public class Player extends Entity {
 		// Wall detection
 		if (inAir) {
 			boolean hitWallRight = !CanMoveHere(hitbox.x + playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
-			boolean hitWallLeft = !CanMoveHere(hitbox.x + playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
+			boolean hitWallLeft = !CanMoveHere(hitbox.x - playerSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData);
 			onWall = (right && hitWallRight) || (left && hitWallLeft);
 		} else {
 			onWall = false;
@@ -485,36 +491,39 @@ public class Player extends Entity {
 	}
 
 	private void jump() {
-		if (inAir && coyoteTimer > coyoteTimerMax) {
+		if (inAir) {
+			// Wall jump
 			if (onWall) {
-				inAir = true;
 				airSpeed = jumpSpeed;
 				jumpHeld = true;
 				jumpHeldTicks = 0;
 				if (right) {
-					hitbox.x -= playerSpeed * 3;
+					currentSpeedX = -maxSpeed; // push left
 					flipX = width;
 					flipW = -1;
-				} else {
-					hitbox.x += playerSpeed * 3;
+				} else if (left) {
+					currentSpeedX = maxSpeed; // push right
 					flipX = 0;
 					flipW = 1;
 				}
+				return;
+			}
+			// Double jump
+			if (jumpsLeft > 0) {
+				airSpeed = jumpSpeed;
+				jumpHeld = true;
+				jumpHeldTicks = 0;
+				jumpsLeft--;
 			}
 			return;
 		}
+		// Normal jump from ground
 		inAir = true;
 		coyoteTimer = coyoteTimerMax + 1;
 		airSpeed = jumpSpeed;
 		jumpHeld = true;
 		jumpHeldTicks = 0;
-
-// -----OLD CODE-----
-//		if (inAir)
-//			return;
-//		inAir = true;
-//		airSpeed = jumpSpeed;
-
+		jumpsLeft = 1;
 	}
 
 	public void dash() {
@@ -528,6 +537,7 @@ public class Player extends Entity {
 	private void resetInAir() {
 		inAir = false;
 		airSpeed = 0;
+		jumpsLeft = 2;
 
 	}
 
@@ -546,8 +556,17 @@ public class Player extends Entity {
 		if (currentHealth <= 0) {
 			currentHealth = 0;
 			// gameOver();
-		} else if (currentHealth >= maxHealth)
+		} else if (currentHealth >= maxHealth) {
 			currentHealth = maxHealth;
+		} else if (value < 0) {
+			playerAction = HURT;
+			aniTick = 0;
+			aniIndex = 0;
+		}
+	}
+	
+	public void kill() {
+		currentHealth = 0;
 	}
 
 	public void changePower(int value) {
@@ -613,9 +632,9 @@ public class Player extends Entity {
 	}
 
 	public Rectangle2D.Float getLightningBox() {
-	    return lightningBox;
+		return lightningBox;
 	}
-	
+
 	public boolean isLeft() {
 		return left;
 	}
@@ -634,6 +653,8 @@ public class Player extends Entity {
 
 	public void setJump(boolean jump) {
 		this.jump = jump;
+		if (jump)
+			jumpPressed = true;
 	}
 
 	public void resetAll() {
@@ -650,4 +671,6 @@ public class Player extends Entity {
 		if (!isEntityOnFloor(hitbox, lvlData))
 			inAir = true;
 	}
+
+
 }

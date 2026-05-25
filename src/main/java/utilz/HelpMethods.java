@@ -13,6 +13,7 @@ import entities.NightBorne;
 import io.arcaneblade.Game;
 import objects.GameContainer;
 import objects.Potion;
+import objects.Spike;
 
 // CHECK IF CANMOVEHERE
 public class HelpMethods {
@@ -26,22 +27,19 @@ public class HelpMethods {
 						return true;
 		return false;
 	}
-	
-	
+
 	// Player Spawn point
 	public static Point GetPlayerSpawn(BufferedImage img) {
-	    for (int j = 0; j < img.getHeight(); j++)
-	        for (int i = 0; i < img.getWidth(); i++) {
-	            Color color = new Color(img.getRGB(i, j));
-	            // Player spawn = R=0, G=255, B=255 (cyan pixel)
-	            if (color.getRed() == 11 &&
-	                color.getGreen() == 255 &&
-	                color.getBlue() == 255)
-	                return new Point(i * Game.TILES_SIZE, j * Game.TILES_SIZE);
-	        }
-	    // Default spawn if no marker found
-	    System.out.println("No player spawn found! Using default.");
-	    return new Point(200, 200);
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				// Player spawn = R=0, G=255, B=255 (cyan pixel)
+				if (color.getRed() == 11 && color.getGreen() == 255 && color.getBlue() == 255)
+					return new Point(i * Game.TILES_SIZE, j * Game.TILES_SIZE);
+			}
+		// Default spawn if no marker found
+		System.out.println("No player spawn found! Using default.");
+		return new Point(200, 200);
 	}
 
 	private static boolean IsSolid(float x, float y, int[][] lvlData) {
@@ -145,7 +143,7 @@ public class HelpMethods {
 			}
 		return lvlData;
 	}
-	
+
 	public static ArrayList<NightBorne> GetMobs(BufferedImage img) {
 		ArrayList<NightBorne> list = new ArrayList<>();
 		for (int j = 0; j < img.getHeight(); j++)
@@ -157,8 +155,7 @@ public class HelpMethods {
 			}
 		return list;
 	}
-	
-	
+
 	public static ArrayList<Potion> GetPotions(BufferedImage img) {
 		ArrayList<Potion> list = new ArrayList<>();
 		for (int j = 0; j < img.getHeight(); j++)
@@ -166,11 +163,11 @@ public class HelpMethods {
 				Color color = new Color(img.getRGB(i, j));
 				int value = color.getBlue();
 				if (value == HEALTH_POTION || value == ENERGY_POTION)
-					list.add(new Potion(i*Game.TILES_SIZE, j * Game.TILES_SIZE, value));	
+					list.add(new Potion(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
 			}
 		return list;
 	}
-	
+
 	public static ArrayList<GameContainer> GetContainers(BufferedImage img) {
 		ArrayList<GameContainer> list = new ArrayList<>();
 		for (int j = 0; j < img.getHeight(); j++)
@@ -178,7 +175,19 @@ public class HelpMethods {
 				Color color = new Color(img.getRGB(i, j));
 				int value = color.getBlue();
 				if (value == BARREL || value == BOX)
-					list.add(new GameContainer(i*Game.TILES_SIZE, j * Game.TILES_SIZE, value));	
+					list.add(new GameContainer(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
+			}
+		return list;
+	}
+
+	public static ArrayList<Spike> GetSpikes(BufferedImage img) {
+		ArrayList<Spike> list = new ArrayList<>();
+		for (int j = 0; j < img.getHeight(); j++)
+			for (int i = 0; i < img.getWidth(); i++) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getBlue();
+				if (value == SPIKE)
+					list.add(new Spike(i * Game.TILES_SIZE, j * Game.TILES_SIZE, SPIKE));
 			}
 		return list;
 	}

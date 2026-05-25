@@ -1,22 +1,15 @@
 package gamestates;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.RadialGradientPaint;
-import java.awt.RenderingHints.Key;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import entities.EnemyManager;
-import entities.NightBorne;
 import entities.Player;
 import io.arcaneblade.Game;
 import levels.LevelManager;
@@ -27,7 +20,6 @@ import ui.LevelCompletedOverlay;
 import ui.PauseOverlay;
 import utilz.Gate;
 import utilz.LoadSave;
-import static utilz.Constants.Environment.*;
 
 public class Playing extends State implements Statemethods {
 	private Player player;
@@ -49,16 +41,13 @@ public class Playing extends State implements Statemethods {
 	private int maxLvlOffsetY;
 
 	private BufferedImage[] zoneBackgrounds, lightningFrames;
-	private BufferedImage backgroundImg, pillars;
+	private BufferedImage backgroundImg;
 
 	private boolean gameOver;
 	private boolean lvlCompleted;
 	private boolean playerDying;
 
 	private ArrayList<LightningStrike> lightningStrikes = new ArrayList<>();
-
-	private float glowPulse = 0f;
-	private float glowDir = 0.02f;
 
 	public Playing(Game game) {
 		super(game);
@@ -291,7 +280,6 @@ public class Playing extends State implements Statemethods {
 //		drawPillars(g);
 
 		levelManager.draw(g, xLvlOffset, yLvlOffset);
-		drawGateEffects(g); // ADD THIS
 		player.render(g, xLvlOffset, yLvlOffset);
 		enemyManager.draw(g, xLvlOffset, yLvlOffset);
 		drawLightning(g);
@@ -307,62 +295,7 @@ public class Playing extends State implements Statemethods {
 			levelCompletedOverlay.draw(g);
 		}
 	}
-
-	private void drawGateEffects(Graphics g) {
-		Graphics2D g2d = (Graphics2D) g;
-
-		glowPulse += glowDir;
-		if (glowPulse >= 1f || glowPulse <= 0f)
-			glowDir = -glowDir;
-
-		ArrayList<Gate> gates = levelManager.getCurrentLevel().getGates();
-		for (Gate gate : gates) {
-			Point glowPoint = gate.trigger != null ? gate.trigger : gate.spawn;
-			if (glowPoint == null)
-				continue;
-
-			int centerX = (int) ((glowPoint.x - xLvlOffset) + Game.TILES_SIZE / 2f + gate.glowOffsetX);
-			int centerY = (int) ((glowPoint.y - yLvlOffset) + Game.TILES_SIZE / 2f + gate.glowOffsetY);
-
-			if (centerX < -Game.TILES_SIZE * 5 || centerX > Game.GAME_WIDTH + Game.TILES_SIZE * 5)
-				continue;
-			if (centerY < -Game.TILES_SIZE * 5 || centerY > Game.GAME_HEIGHT + Game.TILES_SIZE * 5)
-				continue;
-
-			float alpha = 0.3f + (0.4f * glowPulse);
-			Color glowColor = new Color(255, 255, 255, (int) (alpha * 255));
-			Color transparent = new Color(255, 255, 255, 0);
-
-			float glowW = gate.glowW;
-			float glowH = gate.glowH;
-
-			// Apply rotation
-			g2d.rotate(Math.toRadians(gate.glowRotation), centerX, centerY);
-
-			if (gate.vertical) {
-				GradientPaint leftFade = new GradientPaint(centerX, centerY, glowColor, centerX - glowW, centerY,
-						transparent);
-				g2d.setPaint(leftFade);
-				g2d.fillRect((int) (centerX - glowW), (int) (centerY - glowH / 2), (int) glowW, (int) glowH);
-
-				GradientPaint rightFade = new GradientPaint(centerX, centerY, glowColor, centerX + glowW, centerY,
-						transparent);
-				g2d.setPaint(rightFade);
-				g2d.fillRect(centerX, (int) (centerY - glowH / 2), (int) glowW, (int) glowH);
-			} else {
-				GradientPaint upFade = new GradientPaint(centerX, centerY, glowColor, centerX, centerY - glowH,
-						transparent);
-				g2d.setPaint(upFade);
-				g2d.fillRect((int) (centerX - glowW / 2), (int) (centerY - glowH), (int) glowW, (int) glowH);
-			}
-
-			// Reset rotation after each gate
-			g2d.rotate(-Math.toRadians(gate.glowRotation), centerX, centerY);
-		}
-
-		g2d.setPaint(null);
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-	}
+	
 	public void resetAll() {
 		// TODO: reset playing, enemy, lvl, etc.
 		gameOver = false;
@@ -390,6 +323,10 @@ public class Playing extends State implements Statemethods {
 
 	public void checkPotionTouched(Rectangle2D.Float hitbox) {
 		objectManager.checkObjectTouched(hitbox);
+	}
+
+	public void checkSpikesTouched(Player p) {
+		objectManager.checkSpikesTouched(p);
 	}
 
 	public void mouseDragged(MouseEvent e) {
@@ -540,4 +477,5 @@ public class Playing extends State implements Statemethods {
 	public void setPlayerDying(boolean playerDying) {
 		this.playerDying = playerDying;
 	}
+
 }

@@ -86,18 +86,20 @@ public class NightBorne extends Enemy {
 		}
 	}
 
-	public void drawAttackBox(Graphics g, int xLvlOffset, int yLvlOffset) {
-		g.setColor(Color.red);
-		g.drawRect((int) (attackBox.x - xLvlOffset),
-				(int) attackBox.y - yLvlOffset,
-				(int) attackBox.width,
-				(int) attackBox.height);
-		
-		g.setColor(Color.black);
-	    g.drawRect((int) (hitbox.x - xLvlOffset),
-	    		(int) hitbox.y - yLvlOffset,
-	    		(int) hitbox.width, (int) hitbox.height);
-	}
+	
+	// DRAW ATTACKBOX
+//	public void drawAttackBox(Graphics g, int xLvlOffset, int yLvlOffset) {
+//		g.setColor(Color.red);
+//		g.drawRect((int) (attackBox.x - xLvlOffset),
+//				(int) attackBox.y - yLvlOffset,
+//				(int) attackBox.width,
+//				(int) attackBox.height);
+//		
+//		g.setColor(Color.black);
+//	    g.drawRect((int) (hitbox.x - xLvlOffset),
+//	    		(int) hitbox.y - yLvlOffset,
+//	    		(int) hitbox.width, (int) hitbox.height);
+//	}
 
 	public int flipX() {
 		if (walkDir == LEFT)

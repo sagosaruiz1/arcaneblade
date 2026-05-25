@@ -1,19 +1,13 @@
 package utilz;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-
-import entities.NightBorne;
-import io.arcaneblade.Game;
-import static utilz.Constants.EnemyConstants.NIGHTBORNE;
 
 public class LoadSave {
 
@@ -42,11 +36,13 @@ public class LoadSave {
 	public static final String DEATH_SCREEN = "/ui/death_screen.png";
 	public static final String OPTIONS_MENU = "/ui/options_background.png";
 	
+	public static final String TRAP_ATLAS = "/ui/trap_atlas.png"; 
+	
 	
 //	public static final String PILLARS = "/ui/pillars.png";
-	public static final String ZONE_1_BG ="/ui/playing_background_img.png";
+	public static final String ZONE_1_BG ="/ui/zone1_bg.png";
 	public static final String ZONE_2_BG = "/ui/zone2_bg.png";
-	public static final String ZONE_3_BG = "/ui/zone2_bg.png";
+	public static final String ZONE_3_BG = "/ui/zone3_bg.png";
 	
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

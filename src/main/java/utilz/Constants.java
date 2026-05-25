@@ -12,6 +12,7 @@ public class Constants {
 		public static final int ENERGY_POTION = 1;
 		public static final int BARREL = 2;
 		public static final int BOX = 3;
+		public static final int SPIKE = 4;
 
 		public static final int HEALTH_POTION_VALUE = 15;
 		public static final int ENERGY_POTION_VALUE = 30;
@@ -25,9 +26,14 @@ public class Constants {
 		public static final int POTION_HEIGHT_DEFAULT = 16;
 		public static final int POTION_WIDTH = (int) (Game.SCALE * POTION_WIDTH_DEFAULT);
 		public static final int POTION_HEIGHT = (int) (Game.SCALE * POTION_HEIGHT_DEFAULT);
-		
+
+		public static final int SPIKE_WIDTH_DEFAULT = 32;
+		public static final int SPIKE_HEIGHT_DEFAULT = 32;
+		public static final int SPIKE_WIDTH = (int) (Game.SCALE * SPIKE_WIDTH_DEFAULT);
+		public static final int SPIKE_HEIGHT = (int) (Game.SCALE * SPIKE_HEIGHT_DEFAULT);
+
 		public static int GetSpriteAmount(int object_type) {
-			switch(object_type) {
+			switch (object_type) {
 			case HEALTH_POTION, ENERGY_POTION:
 				return 7;
 			case BARREL, BOX:
@@ -36,7 +42,7 @@ public class Constants {
 			return 1;
 		}
 	}
-	
+
 	public static class LightningConstants {
 		public static final int LIGHTNING_WIDTH_DEFAULT = 64;
 		public static final int LIGHTNING_HEIGHT_DEFAULT = 160;
@@ -201,8 +207,9 @@ public class Constants {
 			case DASHING:
 			case ATTACK_1:
 			case ATTACK_2:
-			case HURT:
 				return 10;
+			case HURT:
+				return 20;
 
 			default:
 				return 1;

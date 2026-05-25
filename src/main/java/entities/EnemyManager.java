@@ -48,7 +48,7 @@ public class EnemyManager {
 						(int) (nb.getHitbox().x - xLvlOffset) + nb.flipX() - NB_DRAWOFFSET_X,
 						(int) (nb.getHitbox().y) - yLvlOffset - NB_DRAWOFFSET_Y, NIGHTBORNE_WIDTH * nb.flipW(),
 						NIGHTBORNE_HEIGHT, null);
-				nb.drawAttackBox(g, xLvlOffset, yLvlOffset);
+//				nb.drawAttackBox(g, xLvlOffset, yLvlOffset);
 			}
 	}
 	
