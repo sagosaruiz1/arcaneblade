@@ -442,52 +442,6 @@ public class Player extends Entity {
 		}
 		if (currentSpeedX != 0)
 			moving = true;
-
-// -----OLD CODE-----
-//		moving = false;
-//
-//		if (jump)
-//			jump();
-//
-//		if (!inAir)
-//			if ((!left && !right) || (right && left))
-//				return;
-//
-//		float xSpeed = 0;
-//
-//		if (left) {
-//			xSpeed -= playerSpeed;
-//			flipX = width;
-//			flipW = -1;
-//		}
-//		if (right) {
-//			xSpeed += playerSpeed;
-//			flipX = 0;
-//			flipW = 1;
-//		}
-//
-//		if (!inAir)
-//			if (!isEntityOnFloor(hitbox, lvlData))
-//				inAir = true;
-//
-//		if (inAir) {
-//			if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
-//				hitbox.y += airSpeed;
-//				airSpeed += GRAVITY;
-//				updateXPos(xSpeed);
-//			} else {
-//				hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
-//				if (airSpeed > 0)
-//					resetInAir();
-//				else
-//					airSpeed = fallSpeedAfterCollision;
-//				updateXPos(xSpeed);
-//			}
-//
-//		} else
-//			updateXPos(xSpeed);
-//		moving = true;
-
 	}
 
 	private void jump() {

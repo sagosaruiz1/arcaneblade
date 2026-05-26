@@ -1,4 +1,4 @@
-package entities;
+	package entities;
 
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.HelpMethods.*;
@@ -10,7 +10,7 @@ import static utilz.Constants.*;
 
 import io.arcaneblade.Game;
 
-public abstract class Enemy extends Entity {
+public abstract class Enemy extends Entity {	
 	protected int aniIndex, enemyState, enemyType;
 	protected int aniTick;
 	protected boolean firstUpdate = true;

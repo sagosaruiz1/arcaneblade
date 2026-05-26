@@ -39,14 +39,6 @@ public class NightBorne extends Enemy {
 	}
 
 	private void updateAttackBox() {
-//		if (walkDir == LEFT)
-//			attackBox.x = hitbox.x - attackBox.width + (int)(60*Game.SCALE);
-//		else
-//			attackBox.x = hitbox.x - (int)(-100 * Game.SCALE);
-//
-//		attackBox.y = hitbox.y;
-		
-		// AFTER — clean simple logic:
 		if (walkDir == LEFT)
 		    attackBox.x = hitbox.x - attackBox.width;
 		else
