@@ -77,7 +77,7 @@ public class LevelManager {
 	    // Gate B
 	    levels.get(0).addGate(new Gate(2,
 	        new Point(99 * Game.TILES_SIZE, 27 * Game.TILES_SIZE),
-	        new Point(99 * Game.TILES_SIZE, 26 * Game.TILES_SIZE), true));
+	        new Point(98 * Game.TILES_SIZE, 27 * Game.TILES_SIZE), true));
 
 	    // --- ZONE 2 ---
 	    levels.get(1).addGate(new Gate(1,
@@ -85,18 +85,18 @@ public class LevelManager {
 	        new Point(29 * Game.TILES_SIZE, 0 * Game.TILES_SIZE), false));
 
 	    levels.get(1).addGate(new Gate(2,
-	        new Point(75 * Game.TILES_SIZE, 4 * Game.TILES_SIZE),
-	        new Point(72 * Game.TILES_SIZE, 4 * Game.TILES_SIZE), true));
+	        new Point(78 * Game.TILES_SIZE, 3 * Game.TILES_SIZE),
+	        new Point(79 * Game.TILES_SIZE, 3 * Game.TILES_SIZE), true));
 	    
 	    levels.get(1).addGate(new Gate(3,
 	    		new Point(70 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
-	    		null,
+	    		new Point(71 * Game.TILES_SIZE, 29 * Game.TILES_SIZE),
 	    		false));
 
 	    // --- ZONE 3 ---
 	    levels.get(2).addGate(new Gate(3,
-		        new Point(69 * Game.TILES_SIZE, 0 * Game.TILES_SIZE),
-		        new Point(69 * Game.TILES_SIZE, 1 * Game.TILES_SIZE), true));
+		        new Point(70 * Game.TILES_SIZE, 0 * Game.TILES_SIZE),
+		        new Point(70 * Game.TILES_SIZE, 1 * Game.TILES_SIZE), true));
 	}
 
 	private void importOutsideSprites() {

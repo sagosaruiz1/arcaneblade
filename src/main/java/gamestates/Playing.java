@@ -47,6 +47,7 @@ public class Playing extends State implements Statemethods {
 	private boolean lvlCompleted;
 	private boolean playerDying;
 
+
 	private ArrayList<LightningStrike> lightningStrikes = new ArrayList<>();
 
 	public Playing(Game game) {
